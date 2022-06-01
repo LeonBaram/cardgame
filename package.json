@@ -2,9 +2,8 @@
   "name": "cardgame",
   "version": "1.0.0",
   "description": "web app for playing cards",
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "concurrently \"npx parcel watch\" \"npx tsc -w\" \"npx nodemon dist/server\""
   },
   "repository": {
     "type": "git",
@@ -20,5 +19,14 @@
   "workspaces": [
     "client",
     "server"
-  ]
+  ],
+  "targets": {
+    "default": {
+      "source": "client/index.html",
+      "distDir": "./dist/client"
+    }
+  },
+  "devDependencies": {
+    "concurrently": "^7.2.1"
+  }
 }
