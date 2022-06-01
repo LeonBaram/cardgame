@@ -17,5 +17,8 @@
   "homepage": "https://github.com/LeonBaram/cardgame#readme",
   "devDependencies": {
     "parcel": "^2.6.0"
+  },
+  "dependencies": {
+    "phaser": "^3.55.2"
   }
 }
