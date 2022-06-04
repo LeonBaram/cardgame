@@ -6,22 +6,21 @@ socket.onopen = (event) => {
   socket.send("conk");
 };
 
-const preload: Phaser.Types.Scenes.ScenePreloadCallback = function () {
-  this.load.image({
-    key: "card",
-    url: "/assets/card.jpg",
-    extension: "jpg",
-  });
-};
+const preload: Phaser.Types.Scenes.ScenePreloadCallback = function () {};
 
 const create: Phaser.Types.Scenes.SceneCreateCallback = function () {
-  const image: Phaser.GameObjects.Image = this.add.image(100, 100, "card");
+  const card = this.add.image(500, 500, "card");
+  this.load.image(
+    "card",
+    "https://c1.scryfall.com/file/scryfall-cards/large/front/a/4/a457f404-ddf1-40fa-b0f0-23c8598533f4.jpg?1645328634"
+  );
 
-  image.setInteractive();
+  this.load.once(Phaser.Loader.Events.COMPLETE, () => {
+    card.setTexture("card").setInteractive();
+    this.input.setDraggable(card).on("drag", handleEventMouseDrag);
+  });
 
-  this.input.setDraggable(image);
-
-  this.input.on("drag", handleEventMouseDrag);
+  this.load.start();
 };
 
 const game = new Phaser.Game({
