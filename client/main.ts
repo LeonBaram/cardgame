@@ -25,7 +25,10 @@ const create: Phaser.Types.Scenes.SceneCreateCallback = function () {
 
 const game = new Phaser.Game({
   type: Phaser.WEBGL,
-  width: window.innerWidth,
-  height: window.innerHeight,
+  scale: {
+    mode: Phaser.Scale.FIT,
+    height: "100vh",
+    width: "100vw",
+  },
   scene: { preload, create },
 });
