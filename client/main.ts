@@ -29,13 +29,3 @@ const game = new Phaser.Game({
   height: window.innerHeight,
   scene: { preload, create },
 });
-
-function handleEventMouseDrag(
-  mousePointer: Phaser.Input.Pointer,
-  gameObject: Phaser.GameObjects.Image,
-  dragX: number,
-  dragY: number
-): void {
-  gameObject.x = dragX;
-  gameObject.y = dragY;
-}
