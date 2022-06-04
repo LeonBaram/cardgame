@@ -1,4 +1,8 @@
 import Phaser from "phaser";
+import { Card } from "./models/card";
+import { fetchScryfallCardData } from "./utils/card-importer";
+import { handleMouseDrag } from "./utils/event-handlers";
+import { ScryfallCardData } from "./models/external/ScryfallCardData";
 
 const socket = new WebSocket("ws://localhost:3000");
 
@@ -6,21 +10,34 @@ socket.onopen = (event) => {
   socket.send("conk");
 };
 
+const cards: Map<string, Card> = new Map();
+
 const preload: Phaser.Types.Scenes.ScenePreloadCallback = function () {};
 
 const create: Phaser.Types.Scenes.SceneCreateCallback = function () {
-  const card = this.add.image(500, 500, "card");
-  this.load.image(
-    "card",
-    "https://c1.scryfall.com/file/scryfall-cards/large/front/a/4/a457f404-ddf1-40fa-b0f0-23c8598533f4.jpg?1645328634"
-  );
+  this.input.on("drag", handleMouseDrag);
 
-  this.load.once(Phaser.Loader.Events.COMPLETE, () => {
-    card.setTexture("card").setInteractive();
-    this.input.setDraggable(card).on("drag", handleEventMouseDrag);
-  });
+  const loadCardData = (
+    data: ScryfallCardData,
+    spawnX: number = this.scale.width / 2,
+    spawnY: number = this.scale.height / 2
+  ) => {
+    const { id } = data;
+    const sprite = this.add.image(spawnX, spawnY, id);
+    this.load
+      .image(id, data.image_uris!.png!)
+      .once(Phaser.Loader.Events.COMPLETE, () => {
+        sprite.setTexture(id).setScale(0.3).setInteractive();
+        this.input.setDraggable(sprite);
+      })
+      .start();
+    cards.set(id, { sprite, data });
+  };
 
-  this.load.start();
+  const importCard = (cardName: string) =>
+    fetchScryfallCardData(cardName).then(loadCardData);
+
+  importCard("forest");
 };
 
 const game = new Phaser.Game({
