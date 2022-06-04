@@ -332,12 +332,30 @@
       type: object
       additionalProperties: false
       properties: {
-        png: { type: "uri" }
-        border_crop: { type: "uri" }
-        art_crop: { type: "uri" }
-        large: { type: "uri" }
-        normal: { type: "uri" }
-        small: { type: "uri" }
+        png: {
+          type: string
+          format: uri
+        }
+        border_crop: {
+          type: string
+          format: uri
+        }
+        art_crop: {
+          type: string
+          format: uri
+        }
+        large: {
+          type: string
+          format: uri
+        }
+        normal: {
+          type: string
+          format: uri
+        }
+        small: {
+          type: string
+          format: uri
+        }
       }
       description: Scryfall produces multiple sizes of images and image crops for each Card object. Links to these images are available in each Card objects' image_uris properties. You can also request image format for many of the card API methods and receive a redirect to an image file.
     }
