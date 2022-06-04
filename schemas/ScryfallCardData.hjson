@@ -1,0 +1,704 @@
+{
+  $schema: https://json-schema.org/draft/2019-09/schema
+  type: object
+  title: Scryfall Card Data
+  description: MTG Card Object returned by the Scryfall API (https://scryfall.com/docs/api/cards)
+  required: [
+    id
+    lang
+    object
+    oracle_id
+    prints_search_uri
+    rulings_uri
+    scryfall_uri
+    uri
+    cmc
+    colors
+    keywords
+    layout
+    legalities
+    name
+    type_line
+    booster
+    border_color
+    card_back_id
+    collector_number
+    digital
+    finshes
+    frame
+    full_art
+    games
+    highres_image
+    image_status
+    prices
+    promo
+    purchase_uris
+    rarity
+    related_uris
+    released_at
+    reprint
+    scryfall_set_uri
+    set_name
+    set_search_uri
+    set_type
+    set_uri
+    set
+    set_id
+    story_spotlight
+    textless
+    variation
+  ]
+  additionalProperties: false
+  properties: {
+    arena_id: {
+      type: number
+      description: This card's Arena ID, if any. A large percentage of cards are not available on Arena and do not have this ID. 
+    }
+    id: {
+      type: string
+      description: A unique ID for this card in Scryfall's database. 
+    }
+    lang: {
+      type: string
+      description: language code for this printing.
+    }
+    mtgo_id: {
+      type: number
+      description: This card's Magic Online ID (also known as the Catalog ID), if any. A large percentage of cards are not available on Magic Online and do not have this ID.
+    }
+    mtgo_foil_id: {
+      type: number
+      description: This card's foil Magic Online ID (also known as the Catalog ID), if any. A large percentage of cards are not available on Magic Online and do not have this ID.
+    }
+    multiverse_ids: {
+      type: array
+      items: {
+        type: number
+      }
+      description: This card's multiverse IDs on Gatherer, if any, as an array of integers. Note that Scryfall includes many promo cards, tokens, and other esoteric objects that do not have these identifiers.
+    }
+    tcgplayer_id: {
+      type: number
+      description: This card's ID on TCGplayer's API, also known as the productId.
+    }
+    tcgplayer_etched_id: {
+      type: number
+      description: This card's ID on TCGplayer's API, for its etched version if that version is a separate product.
+    }
+    cardmarket_id: {
+      type: number
+      description: This card's ID on Cardmarket's API, also known as the idProduct.
+    }
+    object: {
+      const: card
+      description: A content type for this object, always card.
+    }
+    oracle_id: {
+      type: string
+      description: A unique ID for this card's oracle identity. This value is consistent across reprinted card editions, and unique among different cards with the same name (tokens, Unstable variants, etc).
+    }
+    prints_search_uri: {
+      type: string
+      format: uri
+      description: A link to where you can begin paginating all re/prints for this card on Scryfall's API.
+    }
+    rulings_uri: {
+      type: string
+      format: uri
+      description: A link to this card's rulings list on Scryfall's API.
+    }
+    scryfall_uri: {
+      type: string
+      format: uri
+      description: A link to this card's permapage on Scryfall's website.
+    }
+    uri: {
+      type: string
+      format: uri
+      description: A link to this card object on Scryfall's API.
+    }
+
+    // Gameplay Fields
+    // Cards have the following properties relevant to the game rules:
+    all_parts: {
+      type: array
+      items: {
+        $ref: "#/$defs/RelatedCard"
+      }
+      description: If this card is closely related to other cards, this property will be an array with Related Card objects.
+    }
+    card_faces: {
+      type: array
+      items: {
+        $ref: "#/$defs/CardFace"
+      }
+      description: An array of Card Face objects, if this card is multifaced.
+    }
+    cmc: {
+      type: number
+      description: The card's converted mana cost. Note that some funny cards have fractional mana costs.
+    }
+    color_identity: {
+      type: array
+      items: {
+        $ref: "#/$defs/Color"
+      }
+      description: This card's color identity.
+    }
+    color_indicator: {
+      type: array
+      items: {
+        $ref: "#/$defs/Color"
+      }
+      description: The colors in this card's color indicator, if any. A null value for this field indicates the card does not have one.
+    }
+    colors: {
+      type: array
+      items: {
+        $ref: "#/$defs/Color"
+      }
+      description: This card's colors, if the overall card has colors defined by the rules. Otherwise the colors will be on the card_faces objects, see below.
+    }
+    edhrec_rank: {
+      type: number
+      description: This card's overall rank/popularity on EDHREC. Not all cards are ranked.
+    }
+    hand_modifier: {
+      type: string
+      description: This card's hand modifier, if it is Vanguard card. This value will contain a delta, such as -1.
+    }
+    keywords: {
+      type: array
+      items: {
+        type: string
+      }
+      description: An array of keywords that this card uses, such as 'Flying' and 'Cumulative upkeep'.
+    }
+    layout: {
+      type: string
+      description: A code for this card's layout.
+    }
+    legalities: {
+      type: object
+      additionalProperties: false
+      patternProperties: {
+        .: {
+          enum: [
+            legal
+            not_legal
+            restricted
+            banned
+          ]
+        }
+      }
+      description: An object describing the legality of this card across play formats. Possible legalities are legal, not_legal, restricted, and banned.
+    }
+    life_modifier: {
+      type: string
+      description: This card's life modifier, if it is Vanguard card. This value will contain a delta, such as +2.
+    }
+    loyalty: {
+      type: string
+      description: This loyalty if any. Note that some cards have loyalties that are not numeric, such as X.
+    }
+    mana_cost: {
+      type: string
+      description: The mana cost for this card. This value will be any empty string "" if the cost is absent. Remember that per the game rules, a missing mana cost and a mana cost of {0} are different values. Multi-faced cards will report this value in card faces.
+    }
+    name: {
+      type: string
+      description: The name of this card. If this card has multiple faces, this field will contain both names separated by ␣//␣.
+    }
+    oracle_text: {
+      type: string
+      description: The Oracle text for this card, if any.
+    }
+    oversized: {
+      type: boolean
+      description: True if this card is oversized.
+    }
+    penny_rank: {
+      type: number
+      description: This card's rank/popularity on Penny Dreadful. Not all cards are ranked.
+    }
+    power: {
+      type: string
+      description: This card's power, if any. Note that some cards have powers that are not numeric, such as *.
+    }
+    produced_mana: {
+      type: array
+      items: {
+        $ref: "#/$defs/Color"
+      }
+      description: Colors of mana that this card could produce.
+    }
+    reserved: {
+      type: boolean
+      description: True if this card is on the Reserved List.
+    }
+    toughness: {
+      type: string
+      description: This card's toughness, if any. Note that some cards have toughnesses that are not numeric, such as *.
+    }
+    type_line: {
+      type: string
+      description: The type line of this card.
+    }
+    
+    // Print Fields
+    // Cards have the following properties unique to their particular re/print:
+    artist: {
+      type: string
+      description: The name of the illustrator of this card. Newly spoiled cards may not have this field yet.
+    }
+    booster: {
+      type: boolean
+      description: Whether this card is found in boosters.
+    }
+    border_color: {
+      type: string
+      description: This card's border color: black, white, borderless, silver, or gold.
+    }
+    card_back_id: {
+      type: string
+      description: The Scryfall ID for the card back design present on this card.
+    }
+    collector_number: {
+      type: string
+      description: This card's collector number. Note that collector numbers can contain non-numeric characters, such as letters or ★.
+    }
+    content_warning: {
+      type: boolean
+      description: True if you should consider avoiding use of this print downstream.
+    }
+    digital: {
+      type: boolean
+      description: True if this card was only released in a video game.
+    }
+    finishes: {
+      type: array
+      items: {
+        type: string
+      }
+      description: An array of computer-readable flags that indicate if this card can come in foil, nonfoil, etched, or glossy finishes.
+    }
+    flavor_name: {
+      type: string
+      description: The just-for-fun name printed on the card (such as for Godzilla series cards).
+    }
+    flavor_text: {
+      type: string
+      description: The flavor text, if any.
+    }
+    frame_effects: {
+      type: array
+      items: {
+        $ref: "#/$defs/FrameEffect"
+      }
+      description: This card's frame effects, if any.
+    }
+    frame: {
+      $ref: "#/$defs/Frame"
+    }
+    full_art: {
+      type: boolean
+      description: True if this card's artwork is larger than normal.
+    }
+    games: {
+      type: array
+      items: {
+        type: string
+      }
+      description: A list of games that this card print is available in, paper, arena, and/or mtgo.
+    }
+    highres_image: {
+      type: boolean
+      description: True if this card's imagery is high resolution.
+    }
+    illustration_id: {
+      type: string
+      description: A unique identifier for the card artwork that remains consistent across reprints. Newly spoiled cards may not have this field yet.
+    }
+    image_status: {
+      enum: [
+        missing
+        placeholder
+        lowres
+        highres_scan
+      ]
+      description: A computer-readable indicator for the state of this card's image, one of missing, placeholder, lowres, or highres_scan.
+    }
+    image_uris: {
+      type: object
+      additionalProperties: false
+      properties: {
+        png: { type: "uri" }
+        border_crop: { type: "uri" }
+        art_crop: { type: "uri" }
+        large: { type: "uri" }
+        normal: { type: "uri" }
+        small: { type: "uri" }
+      }
+      description: Scryfall produces multiple sizes of images and image crops for each Card object. Links to these images are available in each Card objects' image_uris properties. You can also request image format for many of the card API methods and receive a redirect to an image file.
+    }
+    prices: {
+      type: object
+      additionalProperties: false
+      properties: {
+        usd: { type: "string" }
+        usd_foil: { type: "string" }
+        usd_etched: { type: "string" }
+        eur: { type: "string" }
+        tix: { type: "string" }
+      }
+      description: An object containing daily price information for this card, including usd, usd_foil, usd_etched, eur, and tix prices, as strings.
+    }
+    printed_name: {
+      type: string
+      description: The localized name printed on this card, if any.
+    }
+    printed_text: {
+      type: string
+      description: The localized text printed on this card, if any.
+    }
+    printed_type_line: {
+      type: string
+      description: The localized type line printed on this card, if any.
+    }
+    promo: {
+      type: boolean
+      description: True if this card is a promotional print.
+    }
+    promo_types: {
+      type: array
+      items: {
+        type: string
+      }
+      description: An array of strings describing what categories of promo cards this card falls into.
+    }
+    purchase_uris: {
+      type: object
+      $ref: "#/$defs/URI_Object"
+      description: An object providing URIs to this card's listing on major marketplaces.
+    }
+    rarity: {
+      type: string
+      description: This card's rarity. One of common, uncommon, rare, special, mythic, or bonus.
+    }
+    related_uris: {
+      type: object
+      $ref: "#/$defs/URI_Object"
+      description: An object providing URIs to this card's listing on other Magic: The Gathering online resources.
+    }
+    released_at: {
+      type: string
+      format: date
+      description: The date this card was first released.
+    }
+    reprint: {
+      type: boolean
+      description: True if this card is a reprint.
+    }
+    scryfall_set_uri: {
+      type: string
+      format: uri
+      description: A link to this card's set on Scryfall's website.
+    }
+    set_name: {
+      type: string
+      description: This card's full set name.
+    }
+    set_search_uri: {
+      type: string
+      format: uri
+      description: A link to where you can begin paginating this card's set on the Scryfall API.
+    }
+    set_type: {
+      type: string
+      description: The type of set this printing is in.
+    }
+    set_uri: {
+      type: string
+      format: uri
+      description: A link to this card's set object on Scryfall's API.
+    }
+    set: {
+      type: string
+      description: This card's set code.
+    }
+    set_id: {
+      type: string
+      description: This card's Set object string.
+    }
+    story_spotlight: {
+      type: boolean
+      description: True if this card is a Story Spotlight.
+    }
+    textless: {
+      type: boolean
+      description: True if the card is printed without text.
+    }
+    variation: {
+      type: boolean
+      description: Whether this card is a variation of another printing.
+    }
+    variation_of: {
+      type: string
+      description: The printing ID of the printing this card is a variation of.
+    }
+    security_stamp: {
+      type: string
+      description: The security stamp on this card, if any. One of oval, triangle, acorn, or arena.
+    }
+    watermark: {
+      type: string
+      description: This card's watermark, if any.
+    }
+    preview.previewed_at: {
+      type: string
+      format: date
+      description: The date this card was previewed.
+    }
+    preview.source_uri: {
+      type: string 
+      format: uri
+      description: A link to the preview for this card.
+    }
+    preview.source: {
+      type: string 
+      description: The name of the source that previewed this card.
+    }
+  }
+  $defs: {
+    URI_Object: {
+      type: object
+      additionalProperties: false
+      patternProperties: {
+        .: {
+          type: string
+          format: uri
+        }
+      }
+    }
+    Color: {
+      title: Color
+      description: Whenever the API presents set of Magic colors, the field will be an array that uses the uppercase, single-character abbreviations for those colors. For example, ["W","U"] represents something that is both white and blue. Colorless sources are denoted with an empty array [] Common places were you might see this kind of array are a Card object's colors and color_identity. When a color field is null or missing, it implies that that information is not pertinent for the current object. It does not imply that the object is colorless. Color arrays are not guaranteed to be in a particular order.
+      enum: [
+        W
+        U
+        B
+        R
+        G
+      ]
+    }
+    Frame: {
+      title: Frame
+      description: The frame field tracks the edition of the card frame of used for the re/print in question. The overall Magic frame has gone though several major revisions in the game's lifetime.
+      enum: [
+        // The original Magic card frame, starting from Limited Edition Alpha.
+        "1993"
+        // The updated classic frame starting from Mirage block
+        "1997"
+        // The “modern” Magic card frame, introduced in Eighth Edition and Mirrodin block.
+        "2003"
+        // The holofoil-stamp Magic card frame, introduced in Magic 2015.
+        "2015"
+        // The frame used on cards from the future
+        future
+      ]
+    }
+    FrameEffect: {
+      title: Frame Effect
+      description: The frame_effects field tracks additional frame artwork applied over a particular frame. For example, there are both 2003 and 2015-frame cards with the Nyx-touched effect.
+      enum: [
+        // The cards have a legendary crown
+        legendary
+        // The miracle frame effect
+        miracle
+        // The Nyx-touched frame effect
+        nyxtouched
+        // The draft-matters frame effect
+        draft
+        // The Devoid frame effect
+        devoid
+        // The Odyssey tombstone mark
+        tombstone
+        // A colorshifted frame
+        colorshifted
+        // The FNM-style inverted frame
+        inverted
+        // The sun and moon transform marks
+        sunmoondfc
+        // The compass and land transform marks
+        compasslanddfc
+        // The Origins and planeswalker transform marks
+        originpwdfc
+        // The moon and Eldrazi transform marks
+        mooneldrazidfc
+        // The waxing and waning crescent moon transform marks
+        waxingandwaningmoondfc
+        // A custom Showcase frame
+        showcase
+        // An extended art frame
+        extendedart
+        // The cards have a companion frame
+        companion
+        // The cards have an etched foil treatment
+        etched
+        // The cards have the snowy frame effect
+        snow
+        // The cards have the Lesson frame effect
+        lesson
+      ]
+    }
+    CardFace: {
+      type: object
+      title: Card Face
+      description: Multiface cards have a card_faces property containing at least two Card Face objects.
+      required: [
+        mana_cost
+        name
+        object
+      ]
+      additionalProperties: false
+      properties: {
+        artist: {
+          type: string
+          description: The name of the illustrator of this card face. Newly spoiled cards may not have this field yet.
+        }
+        cmc: {
+          type: number
+          description: The mana value of this particular face, if the card is reversible.
+        }
+        color_indicator: {
+          type: array
+          items: {
+            $ref: "#/$defs/Color"
+          }
+          description: The colors in this face's color indicator, if any.
+        }
+        colors: {
+          type: array
+          items: {
+            $ref: "#/$defs/Color"
+          }
+          description: This face's colors, if the game defines colors for the individual face of this card.
+        }
+        flavor_text: {
+          type: string
+          description: The flavor text printed on this face, if any.
+        }
+        illustration_id: {
+          type: string
+          description: A unique identifier for the card face artwork that remains consistent across reprints. Newly spoiled cards may not have this field yet.
+        }
+        image_uris: {
+          type: object
+          $ref: "#/$defs/URI_Object"
+          description: An object providing URIs to imagery for this face, if this is a double-sided card. If this card is not double-sided, then the image_uris property will be part of the parent object instead.
+        }
+        layout: {
+          type: string
+          description: The layout of this card face, if the card is reversible.
+        }
+        loyalty: {
+          type: string
+          description: This face's loyalty, if any.
+        }
+        mana_cost: {
+          type: string
+          description: The mana cost for this face. This value will be any empty string "" if the cost is absent. Remember that per the game rules, a missing mana cost and a mana cost of {0} are different values.
+        }
+        name: {
+          type: string
+          description: The name of this particular face.
+        }
+        object: {
+          const: card_face
+          description: A content type for this object, always card_face.
+        }
+        oracle_id: {
+          type: string
+          description: The Oracle ID of this particular face, if the card is reversible.
+        }
+        oracle_text: {
+          type: string
+          description: The Oracle text for this face, if any.
+        }
+        power: {
+          type: string
+          description: This face's power, if any. Note that some cards have powers that are not numeric, such as *.
+        }
+        printed_name: {
+          type: string
+          description: The localized name printed on this face, if any.
+        }
+        printed_text: {
+          type: string
+          description: The localized text printed on this face, if any.
+        }
+        printed_type_line: {
+          type: string
+          description: The localized type line printed on this face, if any.
+        }
+        toughness: {
+          type: string
+          description: This face's toughness, if any.
+        }
+        type_line: {
+          type: string
+          description: The type line of this particular face, if the card is reversible.
+        }
+        watermark: {
+          type: string
+          description: The watermark on this particulary card face, if any.
+        }
+      }
+    }
+    RelatedCard: {
+      type: object
+      title: Related Card
+      description: Cards that are closely related to other cards (because they call them by name, or generate a token, or meld, etc) have a all_parts property that contains Related Card objects.
+      required: [
+        id
+        object
+        component
+        name
+        type_line
+        uri
+      ]
+      additionalProperties: false
+      properties: {
+        id: {
+          type: string
+          description: An unique ID for this card in Scryfall's database.
+        }
+        object: {
+          const: related_card
+          description: A content type for this object, always related_card.
+        }
+        component: {
+          enum: [
+            token
+            meld_part
+            meld_result
+            combo_piece
+          ]
+          description: A field explaining what role this card plays in this relationship, one of token, meld_part, meld_result, or combo_piece.
+        }
+        name: {
+          type: string
+          description: The name of this particular related card.
+        }
+        type_line: {
+          type: string
+          description: The type line of this card.
+        }
+        uri: {
+          type: string
+          description: A string where you can retrieve a full object describing this card on Scryfall's API. 
+        }
+      }
+    }
+  }
+}
