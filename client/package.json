@@ -16,6 +16,7 @@
   },
   "homepage": "https://github.com/LeonBaram/cardgame#readme",
   "devDependencies": {
+    "hjson": "^3.2.2",
     "parcel": "^2.6.0"
   },
   "dependencies": {
