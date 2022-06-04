@@ -27,9 +27,10 @@
     }
   },
   "devDependencies": {
-    "hjson": "^3.2.2",
-    "json-schema-to-typescript": "^10.1.5",
+    "@parcel/transformer-sass": "^2.6.0",
     "concurrently": "^7.2.1",
-    "path-browserify": "^1.0.1"
+    "events": "^3.3.0",
+    "hjson": "^3.2.2",
+    "json-schema-to-typescript": "^10.1.5"
   }
 }
