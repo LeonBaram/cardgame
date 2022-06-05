@@ -1,6 +1,8 @@
-import type { EventHandlers } from "../models/Events";
+import type { EventHandlers, EventHandlerContext } from "../models/Events";
 
-export const eventHandlers: EventHandlers = {
+export const createEventHandlers = (
+  context: EventHandlerContext
+): EventHandlers => ({
   JoinRequested: ({ ...args }): void => {
     throw new Error("Function not implemented.");
   },
@@ -43,4 +45,4 @@ export const eventHandlers: EventHandlers = {
   CounterUpdated: ({ ...args }): void => {
     throw new Error("Function not implemented.");
   },
-};
+});

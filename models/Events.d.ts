@@ -3,7 +3,7 @@ import type { GameObjectType } from "./GameObjects";
 import type { Player } from "./Player";
 import type { Room } from "./Room";
 
-type EventHandlerContext = {
+export type EventHandlerContext = {
   rooms: Map<string, Room>;
   players: Map<string, Player>;
   socket: WebSocket;
@@ -12,7 +12,6 @@ type EventHandlerContext = {
 type CommonEventData = {
   event: string;
   roomID: string;
-  context: EventHandlerContext;
 };
 
 export type PlayerEvent = CommonEventData & {
