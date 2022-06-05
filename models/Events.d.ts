@@ -3,7 +3,7 @@ import type { GameObjectType } from "./GameObjects";
 
 export type EventData = {
   event: string;
-  ws: WebSocket;
+  socket: WebSocket;
   roomID: string;
 };
 
