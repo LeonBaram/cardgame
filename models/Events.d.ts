@@ -1,17 +1,25 @@
 import type { WebSocket } from "ws";
 import type { GameObjectType } from "./GameObjects";
+import type { Player } from "./Player";
+import type { Room } from "./Room";
 
-export type EventData = {
-  event: string;
+type EventHandlerContext = {
+  rooms: Map<string, Room>;
+  players: Map<string, Player>;
   socket: WebSocket;
-  roomID: string;
 };
 
-export type PlayerEvent = EventData & {
+type CommonEventData = {
+  event: string;
+  roomID: string;
+  context: EventHandlerContext;
+};
+
+export type PlayerEvent = CommonEventData & {
   playerID: string;
 };
 
-export type GameObjectEvent = EventData & {
+export type GameObjectEvent = CommonEventData & {
   gameObjectID: string;
   gameObjectType: GameObjectType;
 };
