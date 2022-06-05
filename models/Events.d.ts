@@ -6,12 +6,12 @@ import type { Room } from "./Room";
 export type EventHandlerContext = {
   rooms: Map<string, Room>;
   players: Map<string, Player>;
-  socket: WebSocket;
 };
 
 type CommonEventData = {
   event: string;
   roomID: string;
+  socket: WebSocket;
 };
 
 export type PlayerEvent = CommonEventData & {
