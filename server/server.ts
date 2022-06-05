@@ -3,6 +3,7 @@ import { createServer } from "http";
 import { Server as WebSocketServer } from "ws";
 
 import type { WebSocket } from "ws";
+import type { WebSocketEventData } from "../models/Events";
 
 const app = express();
 
@@ -15,10 +16,7 @@ const wss = new WebSocketServer({ server: httpServer });
 wss.on("connection", (ws: WebSocket) => {
   ws.send("[immediate greeting]");
 
-  ws.on("message", (message: string) => {
-    console.log(`received ${message}`);
-    ws.send(`oh yeah? how about you go ${message} yourself some bitches.`);
-  });
+  ws.on("message", (data: WebSocketEventData) => {});
 });
 
 httpServer.listen(process.env.PORT ?? 3000, () =>
