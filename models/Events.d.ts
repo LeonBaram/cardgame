@@ -18,6 +18,9 @@ export type GameObjectEvent = EventData & {
 
 export type EventTypes = {
   // Player Events
+  JoinRequested: PlayerEvent & {
+    event: "JoinRequested";
+  };
   PlayerJoined: PlayerEvent & {
     event: "PlayerJoined";
   };

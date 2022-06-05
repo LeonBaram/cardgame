@@ -1,6 +1,9 @@
 import type { EventHandlers } from "../models/Events";
 
 export const eventHandlers: EventHandlers = {
+  JoinRequested: ({ ...args }): void => {
+    throw new Error("Function not implemented.");
+  },
   PlayerJoined: ({ ...args }): void => {
     throw new Error("Function not implemented.");
   },
