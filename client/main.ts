@@ -1,8 +1,8 @@
 import Phaser from "phaser";
-import { Card } from "./models/card";
+import { Client } from "../models";
 import { fetchScryfallCardData } from "./utils/card-importer";
 import { handleMouseDrag } from "./utils/event-handlers";
-import { ScryfallCardData } from "./models/external/ScryfallCardData";
+import { ScryfallCardData } from "../models";
 
 const socket = new WebSocket("ws://localhost:3000");
 
@@ -10,7 +10,7 @@ socket.onopen = (event) => {
   socket.send("conk");
 };
 
-const cards: Map<string, Card> = new Map();
+const cards: Map<string, Client.GameObjects["Card"]> = new Map();
 
 const preload: Phaser.Types.Scenes.ScenePreloadCallback = function () {};
 
