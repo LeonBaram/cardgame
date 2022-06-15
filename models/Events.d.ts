@@ -1,98 +1,87 @@
-import type { WebSocket } from "ws";
-import type { GameObjectType } from "./GameObjects";
+import type { WebSocketServer } from "ws";
+
+import type { GameObjectTypes, Server } from "./GameObjects";
 import type { Player } from "./Player";
 import type { Room } from "./Room";
 
+// properties that are not event-specific
 export type EventHandlerContext = {
-  rooms: Map<string, Room>;
+  socketServer: WebSocketServer;
   players: Map<string, Player>;
+  rooms: Map<string, Room>;
 };
 
-type CommonEventData = {
-  event: string;
+// properties common to all events
+export type CommonEvent = {
+  eventName: keyof AppEvents;
   roomID: string;
-  socket: WebSocket;
+  playerID?: string;
 };
 
-export type PlayerEvent = CommonEventData & {
-  playerID: string;
-};
+// properties common to all player-related events
+export type PlayerEvent = CommonEvent;
 
-export type GameObjectEvent = CommonEventData & {
+// properties common to all game-object-related events
+export type GameObjectEvent = CommonEvent & {
+  gameObjectType: GameObjectTypes;
   gameObjectID: string;
-  gameObjectType: GameObjectType;
 };
 
-export type EventTypes = {
+export type AppEvents = {
   // Player Events
-  JoinRequested: PlayerEvent & {
-    event: "JoinRequested";
-  };
-  PlayerJoined: PlayerEvent & {
-    event: "PlayerJoined";
-  };
-  PlayerLeft: PlayerEvent & {
-    event: "PlayerLeft";
-  };
-  PlayerBecameHost: PlayerEvent & {
-    event: "PlayerBecameHost";
-  };
+  PlayerJoined: PlayerEvent;
+  PlayerLeft: PlayerEvent;
+  PlayerBecameHost: PlayerEvent & { newHostID: string };
 
   // Game Object Events
   GameObjectCreated: GameObjectEvent & {
-    event: "GameObjectCreated";
+    objectData: Server.AnyGameObjectData;
   };
-  GameObjectDeleted: GameObjectEvent & {
-    event: "GameObjectDeleted";
-  };
+  GameObjectDeleted: GameObjectEvent;
   GameObjectMoved: GameObjectEvent & {
-    event: "GameObjectMoved";
     x: number;
     y: number;
   };
   GameObjectRotated: GameObjectEvent & {
-    event: "GameObjectRotated";
     angle: number;
   };
   GameObjectFlipped: GameObjectEvent & {
-    event: "GameObjectFlipped";
-    faceUp: boolean;
+    isFaceUp: boolean;
   };
   GameObjectCopied: GameObjectEvent & {
-    event: "GameObjectCopied";
+    newGameObjectID: string;
     x: number;
     y: number;
-    angle: number;
   };
 
   // Deck Specific Events
   DeckInsertedCard: GameObjectEvent & {
-    event: "DeckInsertedCard";
     gameObjectType: "Deck";
-    index: number;
     cardID: string;
+    index: number;
   };
   DeckRemovedCard: GameObjectEvent & {
-    event: "DeckRemovedCard";
     gameObjectType: "Deck";
     index: number;
   };
   DeckReordered: GameObjectEvent & {
-    event: "DeckReordered";
     gameObjectType: "Deck";
     indices: number[];
   };
 
   // Counter Specific Events
   CounterUpdated: GameObjectEvent & {
-    event: "CounterUpdated";
     gameObjectType: "Counter";
     val: number;
   };
 };
 
-export type WebSocketEventData = EventTypes[keyof EventTypes];
+export interface EventHandler<E extends keyof AppEvents> {
+  (event: AppEvents[E]): void;
+}
 
-export type EventHandlers = {
-  [event in keyof EventTypes]: (args: EventTypes[event]) => void;
+export type AnyEvent = AppEvents[keyof AppEvents];
+
+export type EventHandlerTable = {
+  [event in keyof AppEvents]: EventHandler<event>;
 };
