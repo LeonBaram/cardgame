@@ -32,5 +32,9 @@
     "events": "^3.3.0",
     "hjson": "^3.2.2",
     "json-schema-to-typescript": "^10.1.5"
+  },
+  "optionalDependencies": {
+    "bufferutil": "^4.0.6",
+    "utf-8-validate": "^5.0.9"
   }
 }
