@@ -10,7 +10,7 @@ import type { AnyEvent, EventHandler, Player, Room } from "../models";
 
 const app = express();
 app
-  .use("/", express.static("dist/client"))
+  .use("/", express.static("dist/client/welcome"))
   .use("/rooms", express.static("dist/client/rooms"));
 
 const httpServer = createServer(app);

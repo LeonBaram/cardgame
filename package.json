@@ -22,7 +22,7 @@
   ],
   "targets": {
     "default": {
-      "source": "client/index.html",
+      "source": "client/welcome/index.html",
       "distDir": "./dist/client"
     }
   },
