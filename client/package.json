@@ -19,6 +19,7 @@
     "parcel": "^2.6.0"
   },
   "dependencies": {
-    "phaser": "^3.55.2"
+    "phaser": "^3.55.2",
+    "uuid": "^8.3.2"
   }
 }
