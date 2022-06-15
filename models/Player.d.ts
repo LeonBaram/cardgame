@@ -1,6 +1,6 @@
-import { Room } from "./Room";
+import type { WebSocket } from "ws";
 
 export type Player = {
-  id: string;
-  room: Room;
+  roomID: string;
+  socket: WebSocket;
 };

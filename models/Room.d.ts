@@ -1,6 +1,7 @@
-import { Player } from "./Player";
+import { Server } from "./GameObjects";
 
 export type Room = {
-  id: string;
-  players: Map<string, Player>;
+  playerIDs: Set<string>;
+  hostPlayerID: string;
+  gameObjects: Map<string, Server.AnyGameObject>;
 };
