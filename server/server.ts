@@ -33,7 +33,8 @@ socketServer.on("connection", (socket: WebSocket, req: IncomingMessage) => {
   players.set(playerID, <Player>{ roomID, socket });
   eventHandlers.PlayerJoined({ eventName: "PlayerJoined", roomID, playerID });
 
-  console.log({ roomID });
+  console.table(rooms);
+  console.table(players);
 
   socket.on("message", (event: AnyEvent) => {
     const { eventName } = event;
