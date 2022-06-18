@@ -1,8 +1,8 @@
 import Phaser from "phaser";
-import { Client } from "../../models";
-import { fetchScryfallCardData } from "../utils/card-importer";
-import { handleMouseDrag } from "../event-handlers/phaser";
-import { ScryfallCardData } from "../../models";
+import { Client } from "../models";
+import { fetchScryfallCardData } from "./utils/card-importer";
+import { handleMouseDrag } from "./event-handlers/phaser";
+import { ScryfallCardData } from "../models";
 
 const socket = new WebSocket("ws://localhost:3000");
 
