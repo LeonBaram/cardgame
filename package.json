@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "web app for playing cards",
   "scripts": {
-    "dev": "concurrently \"npx parcel watch --dist-dir dist/client\" \"npx tsc -w\" \"npx nodemon dist/server\""
+    "serve": "nodemon dist/server"
   },
   "repository": {
     "type": "git",
@@ -21,9 +21,18 @@
     "server"
   ],
   "targets": {
-    "default": {
-      "source": "client/welcome/index.html",
+    "client": {
+      "context": "browser",
+      "source": [
+        "client/index.html",
+        "client/rooms/index.html"
+      ],
       "distDir": "./dist/client"
+    },
+    "server": {
+      "context": "node",
+      "source": "server/index.ts",
+      "distDir": "./dist/server"
     }
   },
   "devDependencies": {

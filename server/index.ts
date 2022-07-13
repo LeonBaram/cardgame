@@ -2,16 +2,15 @@ import { randomUUID } from "crypto";
 import * as express from "express";
 import { createServer } from "http";
 import { Server as WebSocketServer } from "ws";
-import { createEventHandlers } from "./event-handlers";
+import { EventHandlerGroup } from "./event-handlers";
 
 import type { IncomingMessage } from "http";
 import type { WebSocket } from "ws";
-import type { AnyEvent, EventHandler, Player, Room } from "../models";
+import type { EventHandler, Player, Room } from "../models";
 
 const app = express();
-app
-  .use("/", express.static("dist/client/welcome"))
-  .use("/rooms", express.static("dist/client/rooms"));
+app.use(express.static("dist/client"));
+app.use("/rooms/:roomID", express.static("dist/client/rooms"));
 
 const httpServer = createServer(app);
 
@@ -22,7 +21,7 @@ const socketServer = new WebSocketServer({
 
 const players = new Map<string, Player>();
 const rooms = new Map<string, Room>();
-const eventHandlers = createEventHandlers({ rooms, players, socketServer });
+const eventHandlers = new EventHandlerGroup({ rooms, players, socketServer });
 
 socketServer.on("connection", (socket: WebSocket, req: IncomingMessage) => {
   const playerID = randomUUID();
@@ -33,8 +32,7 @@ socketServer.on("connection", (socket: WebSocket, req: IncomingMessage) => {
   players.set(playerID, <Player>{ roomID, socket });
   eventHandlers.PlayerJoined({ eventName: "PlayerJoined", roomID, playerID });
 
-  console.table(rooms);
-  console.table(players);
+  console.log(`added new player #${playerID}`);
 
   socket.on("message", (event: AnyEvent) => {
     const { eventName } = event;
@@ -45,6 +43,7 @@ socketServer.on("connection", (socket: WebSocket, req: IncomingMessage) => {
 
   socket.on("close", () => {
     eventHandlers.PlayerLeft({ eventName: "PlayerLeft", roomID, playerID });
+    players.delete(playerID);
   });
 });
 

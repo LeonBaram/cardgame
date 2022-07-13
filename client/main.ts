@@ -4,13 +4,13 @@ import { fetchScryfallCardData } from "./utils/card-importer";
 import { handleMouseDrag } from "./event-handlers/phaser";
 import { ScryfallCardData } from "../models";
 
-const socket = new WebSocket("ws://localhost:3000");
+// const socket = new WebSocket("ws://localhost:3000");
 
-socket.onopen = (event) => {
-  socket.send("conk");
-};
+// socket.onopen = (event) => {
+//   socket.send("conk");
+// };
 
-const cards: Map<string, Client.GameObjects["Card"]> = new Map();
+const cards: Map<string, Client.GameObject["Card"]> = new Map();
 
 const preload: Phaser.Types.Scenes.ScenePreloadCallback = function () {};
 

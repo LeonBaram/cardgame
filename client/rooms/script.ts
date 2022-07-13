@@ -1,9 +1,9 @@
-// import { AnyEvent } from "../../models";
+const { pathname } = window.location;
 
-const roomID: string = window.location.pathname.match(/\/(.+?)\//)![1];
+const roomID: string = pathname.match(/rooms\/(.+?)\//)![1];
 
 const socket = new WebSocket(`ws://localhost:3000?roomID=${roomID}`);
 
 console.log({ roomID });
 
-document.querySelector("p")!.innerHTML = roomID;
+document.body.innerHTML = roomID;

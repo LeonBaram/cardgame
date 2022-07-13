@@ -1,21 +1,35 @@
 import type { WebSocketServer } from "ws";
 
-import type { GameObjectTypes, Server } from "./GameObjects";
+import type { GameObjectType, Server } from "./GameObjects";
 import type { Player } from "./Player";
 import type { Room } from "./Room";
 
+export type EventName =
+  | "PlayerJoined"
+  | "PlayerLeft"
+  | "PlayerBecameHost"
+  | "GameObjectCreated"
+  | "GameObjectDeleted"
+  | "GameObjectMoved"
+  | "GameObjectRotated"
+  | "GameObjectFlipped"
+  | "GameObjectCopied"
+  | "DeckInsertedCard"
+  | "DeckRemovedCard"
+  | "DeckReordered"
+  | "CounterUpdated";
+
 // properties that are not event-specific
-export type EventHandlerContext = {
-  socketServer: WebSocketServer;
+export type EventContext = {
   players: Map<string, Player>;
   rooms: Map<string, Room>;
 };
 
 // properties common to all events
 export type CommonEvent = {
-  eventName: keyof AppEvents;
+  eventName: EventName;
   roomID: string;
-  playerID?: string;
+  playerID: string;
 };
 
 // properties common to all player-related events
@@ -23,41 +37,28 @@ export type PlayerEvent = CommonEvent;
 
 // properties common to all game-object-related events
 export type GameObjectEvent = CommonEvent & {
-  gameObjectType: GameObjectTypes;
+  gameObjectType: GameObjectType;
   gameObjectID: string;
 };
 
-export type AppEvents = {
+export type EventData<E extends EventName = EventName> = {
   // Player Events
   PlayerJoined: PlayerEvent;
   PlayerLeft: PlayerEvent;
   PlayerBecameHost: PlayerEvent & { newHostID: string };
 
   // Game Object Events
-  GameObjectCreated: GameObjectEvent & {
-    objectData: Server.AnyGameObjectData;
-  };
+  GameObjectCreated: GameObjectEvent & Server.GameObject;
   GameObjectDeleted: GameObjectEvent;
-  GameObjectMoved: GameObjectEvent & {
-    x: number;
-    y: number;
-  };
-  GameObjectRotated: GameObjectEvent & {
-    angle: number;
-  };
-  GameObjectFlipped: GameObjectEvent & {
-    isFaceUp: boolean;
-  };
-  GameObjectCopied: GameObjectEvent & {
-    newGameObjectID: string;
-    x: number;
-    y: number;
-  };
+  GameObjectMoved: GameObjectEvent & Pick<Server.GameObject, "x" | "y">;
+  GameObjectRotated: GameObjectEvent & Pick<Server.GameObject, "angle">;
+  GameObjectFlipped: GameObjectEvent & Pick<Server.GameObject, "isFaceUp">;
+  GameObjectCopied: GameObjectEvent & Pick<Server.GameObject, "x" | "y">;
 
   // Deck Specific Events
   DeckInsertedCard: GameObjectEvent & {
     gameObjectType: "Deck";
-    cardID: string;
+    scryfallID: string;
     index: number;
   };
   DeckRemovedCard: GameObjectEvent & {
@@ -74,14 +75,12 @@ export type AppEvents = {
     gameObjectType: "Counter";
     val: number;
   };
-};
+}[E];
 
-export interface EventHandler<E extends keyof AppEvents> {
-  (event: AppEvents[E]): void;
-}
-
-export type AnyEvent = AppEvents[keyof AppEvents];
+export type EventHandler<E extends EventName = EventName> = (
+  event: EventData<E>
+) => void;
 
 export type EventHandlerTable = {
-  [event in keyof AppEvents]: EventHandler<event>;
+  [E in EventName]: EventHandler<E>;
 };
