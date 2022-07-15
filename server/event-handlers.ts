@@ -118,7 +118,12 @@ export function GameObjectDeleted(
   ctx: EventContext,
   data: EventData<"GameObjectDeleted">
 ): boolean {
-  return false;
+  const { rooms, roomID } = ctx;
+  const room = rooms.get(roomID)!;
+
+  const { gameObjectID } = data;
+  room.gameObjects.delete(gameObjectID);
+  return true;
 }
 
 export function GameObjectMoved(
