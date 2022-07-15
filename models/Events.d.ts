@@ -4,39 +4,69 @@ import type { GameObjectName, Server } from "./GameObjects";
 import type { Player } from "./Player";
 import type { Room } from "./Room";
 
-// properties that are not event-specific
-export type EventHandlerContext = {
+export type EventName =
+  // Room Events
+  | "PlayerJoined"
+  | "PlayerLeft"
+  | "NewHost"
+  | "RoomChangedSize"
+  | "RoomLocked"
+  | "RoomUnlocked"
+  | "RoomEnabledPassword"
+  | "RoomDisabledPassword"
+  | "RoomChangedPassword"
+  // Game Object Events
+  | "GameObjectDeleted"
+  | "GameObjectMoved"
+  | "GameObjectRotated"
+  | "GameObjectFlipped"
+  | "GameObjectCopied"
+  // Card Specific Events
+  | "CardCreated"
+  // Deck Specific Events
+  | "DeckCreated"
+  | "DeckInsertedCard"
+  | "DeckRemovedCard"
+  | "DeckReordered"
+  // Counter Specific Events
+  | "CounterCreated"
+  | "CounterUpdated";
+
+export type EventContext = {
   socketServer: WebSocketServer;
-  players: Map<string, Player>;
-  rooms: Map<string, Room>;
+  player: Player;
+  room: Room;
 };
 
-// properties common to all events
+// common event interface
 export type CommonEvent = {
-  eventName: keyof AppEvents;
-  roomID: string;
-  playerID?: string;
+  eventName: EventName;
 };
 
-// properties common to all player-related events
-export type PlayerEvent = CommonEvent;
+export type RoomEvent = CommonEvent;
 
-// properties common to all game-object-related events
 export type GameObjectEvent = CommonEvent & {
-  gameObjectType: GameObjectTypes;
+  gameObjectName: GameObjectName;
   gameObjectID: string;
 };
 
-export type AppEvents = {
-  // Player Events
-  PlayerJoined: PlayerEvent;
-  PlayerLeft: PlayerEvent;
-  PlayerBecameHost: PlayerEvent & { newHostID: string };
+export type CardEvent = GameObjectEvent & { gameObjectName: "Card" };
+export type DeckEvent = GameObjectEvent & { gameObjectName: "Deck" };
+export type CounterEvent = GameObjectEvent & { gameObjectName: "Counter" };
+
+export type EventData = {
+  // Room Events
+  PlayerJoined: RoomEvent;
+  PlayerLeft: RoomEvent;
+  NewHost: RoomEvent & { newHostID: string };
+  RoomChangedSize: RoomEvent & { newRoomSize: number };
+  RoomLocked: RoomEvent;
+  RoomUnlocked: RoomEvent;
+  RoomEnabledPassword: RoomEvent & { passwordHash: string };
+  RoomDisabledPassword: RoomEvent;
+  RoomChangedPassword: RoomEvent & { passwordHash: string };
 
   // Game Object Events
-  GameObjectCreated: GameObjectEvent & {
-    objectData: Server.AnyGameObjectData;
-  };
   GameObjectDeleted: GameObjectEvent;
   GameObjectMoved: GameObjectEvent & {
     x: number;
@@ -54,34 +84,25 @@ export type AppEvents = {
     y: number;
   };
 
+  // Card Specific Events
+  CardCreated: CardEvent & Server.GameObjectData["Card"];
+
   // Deck Specific Events
-  DeckInsertedCard: GameObjectEvent & {
-    gameObjectType: "Deck";
+  DeckCreated: DeckEvent & Server.GameObjectData["Deck"];
+  DeckInsertedCard: DeckEvent & {
     cardID: string;
     index: number;
   };
-  DeckRemovedCard: GameObjectEvent & {
-    gameObjectType: "Deck";
+  DeckRemovedCard: DeckEvent & {
     index: number;
   };
-  DeckReordered: GameObjectEvent & {
-    gameObjectType: "Deck";
+  DeckReordered: DeckEvent & {
     indices: number[];
   };
 
   // Counter Specific Events
-  CounterUpdated: GameObjectEvent & {
-    gameObjectType: "Counter";
+  CounterCreated: CounterEvent & Server.GameObjectData["Counter"];
+  CounterUpdated: CounterEvent & {
     val: number;
   };
-};
-
-export interface EventHandler<E extends keyof AppEvents> {
-  (event: AppEvents[E]): void;
-}
-
-export type AnyEvent = AppEvents[keyof AppEvents];
-
-export type EventHandlerTable = {
-  [event in keyof AppEvents]: EventHandler<event>;
 };
