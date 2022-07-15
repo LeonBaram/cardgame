@@ -39,7 +39,24 @@ export function PlayerLeft(
   ctx: EventContext,
   data: EventData<"PlayerLeft">
 ): boolean {
-  return false;
+  const { players, rooms, playerID, roomID } = ctx;
+  const player = players.get(playerID)!;
+  const room = rooms.get(roomID)!;
+
+  room.playerIDs.delete(playerID);
+  player.roomID = null;
+
+  // delete room if empty
+  if (room.playerIDs.size === 0) {
+    rooms.delete(roomID);
+  }
+  // choose new host if necessary
+  else if (room.hostPlayerID === playerID) {
+    const newHostID = [...room.playerIDs][0];
+    NewHost(ctx, { ...data, newHostID });
+  }
+
+  return true;
 }
 
 export function NewHost(
