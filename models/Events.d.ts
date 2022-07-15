@@ -56,7 +56,7 @@ export type CardEvent = GameObjectEvent & { gameObjectName: "Card" };
 export type DeckEvent = GameObjectEvent & { gameObjectName: "Deck" };
 export type CounterEvent = GameObjectEvent & { gameObjectName: "Counter" };
 
-export type EventData = {
+export type EventData<E extends EventName> = {
   // Room Events
   PlayerJoined: RoomEvent;
   PlayerLeft: RoomEvent;
@@ -107,4 +107,4 @@ export type EventData = {
   CounterUpdated: CounterEvent & {
     val: number;
   };
-};
+}[E];
