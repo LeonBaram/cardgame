@@ -1,6 +1,6 @@
 import type { WebSocket } from "ws";
 
 export type Player = {
-  roomID: string;
+  roomID: string | null;
   socket: WebSocket;
 };
