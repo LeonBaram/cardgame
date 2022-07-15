@@ -1,12 +1,10 @@
 export type {
-  AnyEvent,
-  AppEvents,
+  EventName,
+  EventData,
   CommonEvent,
-  EventHandler,
-  EventHandlerContext,
-  EventHandlerTable,
+  EventContext,
   GameObjectEvent,
-  PlayerEvent,
+  RoomEvent,
 } from "./Events";
 export type { Client, Server, GameObjectName } from "./GameObjects";
 export type { ScryfallCardData } from "./ScryfallCardData";
