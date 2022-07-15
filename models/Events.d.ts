@@ -1,6 +1,6 @@
 import type { WebSocketServer } from "ws";
 
-import type { GameObjectTypes, Server } from "./GameObjects";
+import type { GameObjectName, Server } from "./GameObjects";
 import type { Player } from "./Player";
 import type { Room } from "./Room";
 

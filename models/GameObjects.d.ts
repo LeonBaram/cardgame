@@ -1,48 +1,48 @@
 import type * as Phaser from "phaser";
 import type { ScryfallCardData } from "./ScryfallCardData";
 
-export type GameObjectTypes = "Card" | "Deck" | "Counter";
+export type GameObjectName = "Card" | "Deck" | "Counter";
 
 export namespace Client {
-  export type CommonGameObject = {
+  type CommonGameObject = {
     sprite: Phaser.GameObjects.Image;
   };
 
-  export type GameObjectData = {
+  type GameObjectData = {
     Card: { data: ScryfallCardData };
     Deck: { data: ScryfallCardData[] };
     Counter: { val: number };
   };
 
-  export type AnyGameObjectData = GameObjectData[GameObjectTypes];
+  type AnyGameObjectData = GameObjectData[GameObjectName];
 
-  export type GameObjects = {
-    [T in GameObjectTypes]: CommonGameObject & GameObjectData[T];
+  type GameObjects = {
+    [T in GameObjectName]: CommonGameObject & GameObjectData[T];
   };
 
-  export type AnyGameObject = GameObjects[GameObjectTypes];
+  type AnyGameObject = GameObjects[GameObjectName];
 }
 
 export namespace Server {
-  export type CommonGameObject = {
-    gameObjectType: GameObjectTypes;
+  type CommonGameObject = {
+    gameObjectType: GameObjectName;
     isFaceUp: boolean;
     angle: number;
     x: number;
     y: number;
   };
 
-  export type GameObjectData = {
+  type GameObjectData = {
     Card: { scryfallID: string };
     Deck: { scryfallIDs: string[] };
     Counter: { val: number };
   };
 
-  export type AnyGameObjectData = GameObjectData[GameObjectTypes];
+  type AnyGameObjectData = GameObjectData[GameObjectName];
 
-  export type GameObjects = {
-    [T in GameObjectTypes]: CommonGameObject & GameObjectData[T];
+  type GameObjects = {
+    [T in GameObjectName]: CommonGameObject & GameObjectData[T];
   };
 
-  export type AnyGameObject = GameObjects[GameObjectTypes];
+  type AnyGameObject = GameObjects[GameObjectName];
 }
