@@ -9,14 +9,15 @@ export function PlayerJoined(
   const player = players.get(playerID)!;
   const room = rooms.get(roomID);
 
-  // if destination room exists, check if new player is allowed
+  // if room exists, add player to room if allowed
   if (room) {
     // TODO: check if room is full, locked, or password-enabled
+    room.playerIDs.add(playerID);
   }
 
   // leave old room if necessary
   const prevRoomID = player.roomID;
-  if (rooms.has(prevRoomID)) {
+  if (prevRoomID !== null && rooms.has(prevRoomID)) {
     PlayerLeft({ ...ctx, roomID: prevRoomID }, data);
   }
 
@@ -31,7 +32,7 @@ export function PlayerJoined(
 
   player.roomID = roomID;
 
-  return false;
+  return true;
 }
 
 export function PlayerLeft(
