@@ -34,8 +34,10 @@ export type EventName =
 
 export type EventContext = {
   socketServer: WebSocketServer;
-  player: Player;
-  room: Room;
+  players: Map<string, Player>;
+  playerID: string;
+  rooms: Map<string, Room>;
+  roomID: string;
 };
 
 // common event interface
