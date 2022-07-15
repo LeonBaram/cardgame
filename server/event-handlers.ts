@@ -63,7 +63,12 @@ export function NewHost(
   ctx: EventContext,
   data: EventData<"NewHost">
 ): boolean {
-  return false;
+  const { rooms, roomID } = ctx;
+  const room = rooms.get(roomID)!;
+
+  const { newHostID } = data;
+  room.hostPlayerID = newHostID;
+  return true;
 }
 
 export function RoomChangedSize(
