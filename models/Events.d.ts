@@ -51,10 +51,7 @@ export namespace Events {
 
   type Data<E extends EventName> = { eventName: E } & {
     // Room Events
-    PlayerJoined: RoomEvent & {
-      newPlayerID?: string;
-      room?: Room;
-    };
+    PlayerJoined: RoomEvent & ({ newPlayerID: string } | { room: Room });
     PlayerLeft: RoomEvent;
     NewHost: RoomEvent & { newHostID: string };
     RoomChangedSize: RoomEvent & { newRoomSize: number };
