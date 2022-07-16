@@ -1,11 +1,10 @@
-import { EventContext, EventData, Room } from "../models";
+import { Room, Server, Events } from "../models";
 import { randomUUID } from "crypto";
-import { Server } from "../models";
 
 // Room Events
 export function PlayerJoined(
-  ctx: EventContext,
-  data: EventData<"PlayerJoined">
+  ctx: Events.Context,
+  data: Events.Data<"PlayerJoined">
 ): boolean {
   const { players, rooms, playerID, roomID } = ctx;
   const player = players.get(playerID)!;
@@ -40,8 +39,8 @@ export function PlayerJoined(
 }
 
 export function PlayerLeft(
-  ctx: EventContext,
-  data: EventData<"PlayerLeft">
+  ctx: Events.Context,
+  data: Events.Data<"PlayerLeft">
 ): boolean {
   const { players, rooms, playerID, roomID } = ctx;
   const player = players.get(playerID)!;
@@ -64,8 +63,8 @@ export function PlayerLeft(
 }
 
 export function NewHost(
-  ctx: EventContext,
-  data: EventData<"NewHost">
+  ctx: Events.Context,
+  data: Events.Data<"NewHost">
 ): boolean {
   const { rooms, roomID } = ctx;
   const room = rooms.get(roomID)!;
@@ -76,51 +75,51 @@ export function NewHost(
 }
 
 export function RoomChangedSize(
-  ctx: EventContext,
-  data: EventData<"RoomChangedSize">
+  ctx: Events.Context,
+  data: Events.Data<"RoomChangedSize">
 ): boolean {
   return false;
 }
 
 export function RoomLocked(
-  ctx: EventContext,
-  data: EventData<"RoomLocked">
+  ctx: Events.Context,
+  data: Events.Data<"RoomLocked">
 ): boolean {
   return false;
 }
 
 export function RoomUnlocked(
-  ctx: EventContext,
-  data: EventData<"RoomUnlocked">
+  ctx: Events.Context,
+  data: Events.Data<"RoomUnlocked">
 ): boolean {
   return false;
 }
 
 export function RoomEnabledPassword(
-  ctx: EventContext,
-  data: EventData<"RoomEnabledPassword">
+  ctx: Events.Context,
+  data: Events.Data<"RoomEnabledPassword">
 ): boolean {
   return false;
 }
 
 export function RoomDisabledPassword(
-  ctx: EventContext,
-  data: EventData<"RoomDisabledPassword">
+  ctx: Events.Context,
+  data: Events.Data<"RoomDisabledPassword">
 ): boolean {
   return false;
 }
 
 export function RoomChangedPassword(
-  ctx: EventContext,
-  data: EventData<"RoomChangedPassword">
+  ctx: Events.Context,
+  data: Events.Data<"RoomChangedPassword">
 ): boolean {
   return false;
 }
 
 // Game Object Events
 export function GameObjectDeleted(
-  ctx: EventContext,
-  data: EventData<"GameObjectDeleted">
+  ctx: Events.Context,
+  data: Events.Data<"GameObjectDeleted">
 ): boolean {
   const { rooms, roomID } = ctx;
   const { gameObjectID } = data;
@@ -129,8 +128,8 @@ export function GameObjectDeleted(
 }
 
 export function GameObjectMoved(
-  ctx: EventContext,
-  data: EventData<"GameObjectMoved">
+  ctx: Events.Context,
+  data: Events.Data<"GameObjectMoved">
 ): boolean {
   const { rooms, roomID } = ctx;
   const { gameObjectID, x, y } = data;
@@ -144,8 +143,8 @@ export function GameObjectMoved(
 }
 
 export function GameObjectRotated(
-  ctx: EventContext,
-  data: EventData<"GameObjectRotated">
+  ctx: Events.Context,
+  data: Events.Data<"GameObjectRotated">
 ): boolean {
   const { rooms, roomID } = ctx;
   const { gameObjectID, angle } = data;
@@ -158,8 +157,8 @@ export function GameObjectRotated(
 }
 
 export function GameObjectFlipped(
-  ctx: EventContext,
-  data: EventData<"GameObjectFlipped">
+  ctx: Events.Context,
+  data: Events.Data<"GameObjectFlipped">
 ): boolean {
   const { rooms, roomID } = ctx;
   const { gameObjectID, isFaceUp } = data;
@@ -172,8 +171,8 @@ export function GameObjectFlipped(
 }
 
 export function GameObjectCopied(
-  ctx: EventContext,
-  data: EventData<"GameObjectCopied">
+  ctx: Events.Context,
+  data: Events.Data<"GameObjectCopied">
 ): boolean {
   const { rooms, roomID } = ctx;
   const { gameObjectID } = data;
@@ -216,52 +215,52 @@ export function GameObjectCopied(
 
 // Card Specific Events
 export function CardCreated(
-  ctx: EventContext,
-  data: EventData<"CardCreated">
+  ctx: Events.Context,
+  data: Events.Data<"CardCreated">
 ): boolean {
   return false;
 }
 
 // Deck Specific Events
 export function DeckCreated(
-  ctx: EventContext,
-  data: EventData<"DeckCreated">
+  ctx: Events.Context,
+  data: Events.Data<"DeckCreated">
 ): boolean {
   return false;
 }
 
 export function DeckInsertedCard(
-  ctx: EventContext,
-  data: EventData<"DeckInsertedCard">
+  ctx: Events.Context,
+  data: Events.Data<"DeckInsertedCard">
 ): boolean {
   return false;
 }
 
 export function DeckRemovedCard(
-  ctx: EventContext,
-  data: EventData<"DeckRemovedCard">
+  ctx: Events.Context,
+  data: Events.Data<"DeckRemovedCard">
 ): boolean {
   return false;
 }
 
 export function DeckReordered(
-  ctx: EventContext,
-  data: EventData<"DeckReordered">
+  ctx: Events.Context,
+  data: Events.Data<"DeckReordered">
 ): boolean {
   return false;
 }
 
 // Counter Specific Events
 export function CounterCreated(
-  ctx: EventContext,
-  data: EventData<"CounterCreated">
+  ctx: Events.Context,
+  data: Events.Data<"CounterCreated">
 ): boolean {
   return false;
 }
 
 export function CounterUpdated(
-  ctx: EventContext,
-  data: EventData<"CounterUpdated">
+  ctx: Events.Context,
+  data: Events.Data<"CounterUpdated">
 ): boolean {
   return false;
 }

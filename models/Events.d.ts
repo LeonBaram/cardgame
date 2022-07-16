@@ -32,82 +32,78 @@ export type EventName =
   | "CounterCreated"
   | "CounterUpdated";
 
-export type EventContext = {
-  socketServer: WebSocketServer;
-  players: Map<string, Player>;
-  playerID: string;
-  rooms: Map<string, Room>;
-  roomID: string;
-};
-
-// common event interface
-export type CommonEvent = {
-  eventName: EventName;
-};
-
-export type RoomEvent = CommonEvent;
-
-export type GameObjectEvent = CommonEvent & {
-  gameObjectName: GameObjectName;
-  gameObjectID: string;
-};
-
-export type CardEvent = GameObjectEvent & { gameObjectName: "Card" };
-export type DeckEvent = GameObjectEvent & { gameObjectName: "Deck" };
-export type CounterEvent = GameObjectEvent & { gameObjectName: "Counter" };
-
-export type EventData<E extends EventName> = {
-  // Room Events
-  PlayerJoined: RoomEvent & {
-    newPlayerID?: string;
-    room?: Room;
-  };
-  PlayerLeft: RoomEvent;
-  NewHost: RoomEvent & { newHostID: string };
-  RoomChangedSize: RoomEvent & { newRoomSize: number };
-  RoomLocked: RoomEvent;
-  RoomUnlocked: RoomEvent;
-  RoomEnabledPassword: RoomEvent & { passwordHash: string };
-  RoomDisabledPassword: RoomEvent;
-  RoomChangedPassword: RoomEvent & { passwordHash: string };
-
-  // Game Object Events
-  GameObjectDeleted: GameObjectEvent;
-  GameObjectMoved: GameObjectEvent & {
-    x: number;
-    y: number;
-  };
-  GameObjectRotated: GameObjectEvent & {
-    angle: number;
-  };
-  GameObjectFlipped: GameObjectEvent & {
-    isFaceUp: boolean;
-  };
-  GameObjectCopied: GameObjectEvent & {
-    newGameObjectID?: string;
-    x: number;
-    y: number;
+export namespace Events {
+  type Context = {
+    socketServer: WebSocketServer;
+    players: Map<string, Player>;
+    rooms: Map<string, Room>;
+    playerID: string;
+    roomID: string;
   };
 
-  // Card Specific Events
-  CardCreated: CardEvent & Server.GameObjectData<"Card">;
+  type RoomEvent = {};
 
-  // Deck Specific Events
-  DeckCreated: DeckEvent & Server.GameObjectData<"Deck">;
-  DeckInsertedCard: DeckEvent & {
-    cardID: string;
-    index: number;
-  };
-  DeckRemovedCard: DeckEvent & {
-    index: number;
-  };
-  DeckReordered: DeckEvent & {
-    indices: number[];
+  type GameObjectEvent<G extends GameObjectName = GameObjectName> = {
+    gameObjectID: string;
+    gameObjectName: G;
   };
 
-  // Counter Specific Events
-  CounterCreated: CounterEvent & Server.GameObjectData<"Counter">;
-  CounterUpdated: CounterEvent & {
-    val: number;
-  };
-}[E];
+  type GameObjectCreated<G extends GameObjectName> = GameObjectEvent<G> &
+    Server.GameObjectData<G>;
+
+  type Data<E extends EventName> = { eventName: E } & {
+    // Room Events
+    PlayerJoined: RoomEvent & {
+      newPlayerID?: string;
+      room?: Room;
+    };
+    PlayerLeft: RoomEvent;
+    NewHost: RoomEvent & { newHostID: string };
+    RoomChangedSize: RoomEvent & { newRoomSize: number };
+    RoomLocked: RoomEvent;
+    RoomUnlocked: RoomEvent;
+    RoomEnabledPassword: RoomEvent & { passwordHash: string };
+    RoomDisabledPassword: RoomEvent;
+    RoomChangedPassword: RoomEvent & { passwordHash: string };
+
+    // Game Object Events
+    GameObjectDeleted: GameObjectEvent;
+    GameObjectMoved: GameObjectEvent & {
+      x: number;
+      y: number;
+    };
+    GameObjectRotated: GameObjectEvent & {
+      angle: number;
+    };
+    GameObjectFlipped: GameObjectEvent & {
+      isFaceUp: boolean;
+    };
+    GameObjectCopied: GameObjectEvent & {
+      newGameObjectID?: string;
+      x: number;
+      y: number;
+    };
+
+    // Card Specific Events
+    CardCreated: GameObjectCreated<"Card">;
+
+    // Deck Specific Events
+    DeckCreated: GameObjectCreated<"Deck">;
+    DeckInsertedCard: GameObjectEvent<"Deck"> & {
+      cardID: string;
+      index: number;
+    };
+    DeckRemovedCard: GameObjectEvent<"Deck"> & {
+      index: number;
+    };
+    DeckReordered: GameObjectEvent<"Deck"> & {
+      indices: number[];
+    };
+
+    // Counter Specific Events
+    CounterCreated: GameObjectCreated<"Counter">;
+    CounterUpdated: GameObjectEvent<"Counter"> & {
+      val: number;
+    };
+  }[E];
+}
