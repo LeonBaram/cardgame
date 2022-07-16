@@ -28,6 +28,8 @@ export function PlayerJoined(
       hostPlayerID: playerID,
       gameObjects: new Map(),
     });
+  } else {
+    // TODO: broadcast only if room isn't new
   }
 
   player.roomID = roomID;
