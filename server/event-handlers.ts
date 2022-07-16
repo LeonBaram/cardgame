@@ -119,6 +119,17 @@ export function RoomChangedPassword(
   return false;
 }
 
+export function GameObjectCreated(
+  ctx: Events.Context,
+  data: Events.Data<"GameObjectCreated">
+): boolean {
+  const { rooms, roomID } = ctx;
+  const { gameObject } = data;
+
+  const gameObjectID = randomUUID();
+  return !!rooms.get(roomID)?.gameObjects.set(gameObjectID, gameObject);
+}
+
 // Game Object Events
 export function GameObjectDeleted(
   ctx: Events.Context,
