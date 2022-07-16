@@ -1,4 +1,6 @@
 import { EventContext, EventData, Room } from "../models";
+import { randomUUID } from "crypto";
+import { Server } from "../models";
 
 // Room Events
 export function PlayerJoined(
@@ -173,6 +175,42 @@ export function GameObjectCopied(
   ctx: EventContext,
   data: EventData<"GameObjectCopied">
 ): boolean {
+  const { rooms, roomID } = ctx;
+  const { gameObjectID } = data;
+
+  const obj = rooms.get(roomID)?.gameObjects.get(gameObjectID);
+  if (obj) {
+    const newGameObjectID = randomUUID();
+    switch (obj.gameObjectName) {
+      case "Card": {
+        const { scryfallID } = obj as Server.GameObjects["Card"];
+        return CardCreated(ctx, {
+          eventName: "CardCreated",
+          gameObjectID: newGameObjectID,
+          gameObjectName: "Card",
+          scryfallID,
+        });
+      }
+      case "Deck": {
+        const { scryfallIDs } = obj as Server.GameObjects["Deck"];
+        return DeckCreated(ctx, {
+          eventName: "DeckCreated",
+          gameObjectID: newGameObjectID,
+          gameObjectName: "Deck",
+          scryfallIDs,
+        });
+      }
+      case "Counter": {
+        const { val } = obj as Server.GameObjects["Counter"];
+        return CounterCreated(ctx, {
+          eventName: "CounterCreated",
+          gameObjectID: newGameObjectID,
+          gameObjectName: "Counter",
+          val,
+        });
+      }
+    }
+  }
   return false;
 }
 
