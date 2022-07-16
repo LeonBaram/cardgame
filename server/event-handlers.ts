@@ -159,7 +159,14 @@ export function GameObjectFlipped(
   ctx: EventContext,
   data: EventData<"GameObjectFlipped">
 ): boolean {
-  return false;
+  const { rooms, roomID } = ctx;
+  const { gameObjectID, isFaceUp } = data;
+
+  const obj = rooms.get(roomID)?.gameObjects.get(gameObjectID);
+  if (obj) {
+    obj.isFaceUp = isFaceUp;
+  }
+  return !!obj;
 }
 
 export function GameObjectCopied(
