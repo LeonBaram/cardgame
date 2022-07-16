@@ -24,7 +24,7 @@ export type EventName =
   // Deck Specific Events
   | "DeckInsertedCard"
   | "DeckRemovedCard"
-  | "DeckReordered"
+  | "DeckRearranged"
   // Counter Specific Events
   | "CounterUpdated";
 
@@ -86,7 +86,7 @@ export namespace Events {
     DeckRemovedCard: GameObjectEvent<"Deck"> & {
       index: number;
     };
-    DeckReordered: GameObjectEvent<"Deck"> & {
+    DeckRearranged: GameObjectEvent<"Deck"> & {
       indices: number[];
     };
 

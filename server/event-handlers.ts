@@ -225,9 +225,9 @@ export function DeckRemovedCard(
   return true;
 }
 
-export function DeckReordered(
+export function DeckRearranged(
   ctx: Events.Context,
-  data: Events.Data<"DeckReordered">
+  data: Events.Data<"DeckRearranged">
 ): boolean {
   return false;
 }
