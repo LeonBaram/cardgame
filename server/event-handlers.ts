@@ -1,4 +1,4 @@
-import { Room, Server, Events, EventName } from "../models";
+import type { Room, Server, Events, EventName } from "../models";
 import { randomUUID } from "crypto";
 
 export const handlers: {
