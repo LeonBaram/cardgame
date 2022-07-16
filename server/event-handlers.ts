@@ -164,7 +164,15 @@ export function RoomLocked(
   ctx: Events.Context,
   data: Events.Data<"RoomLocked">
 ): boolean {
-  return false;
+  const { rooms, roomID } = ctx;
+
+  const room = rooms.get(roomID);
+  if (!room) {
+    return false;
+  }
+
+  room.isLocked = true;
+  return true;
 }
 
 export function RoomUnlocked(
