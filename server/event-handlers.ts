@@ -1,9 +1,32 @@
 import { Room, Server, Events, EventName } from "../models";
 import { randomUUID } from "crypto";
 
-interface EventHandler<E extends EventName> {
+export interface EventHandler<E extends EventName> {
   (ctx: Events.Context, data: Events.Data<E>): boolean;
 }
+
+export const handlers: {
+  [E in EventName]: EventHandler<E>;
+} = {
+  PlayerJoined,
+  PlayerLeft,
+  NewHost,
+  RoomChangedSize,
+  RoomLocked,
+  RoomUnlocked,
+  RoomEnabledPassword,
+  RoomDisabledPassword,
+  RoomChangedPassword,
+  GameObjectCreated,
+  GameObjectDeleted,
+  GameObjectMoved,
+  GameObjectRotated,
+  GameObjectFlipped,
+  DeckInsertedCard,
+  DeckRemovedCard,
+  DeckRearranged,
+  CounterUpdated,
+};
 
 export function broadcast<E extends EventName>(
   handler: EventHandler<E>,
@@ -42,7 +65,7 @@ export function broadcast<E extends EventName>(
 }
 
 // Room Events
-export function PlayerJoined(
+function PlayerJoined(
   ctx: Events.Context,
   data: Events.Data<"PlayerJoined">
 ): boolean {
@@ -89,7 +112,7 @@ export function PlayerJoined(
   return true;
 }
 
-export function PlayerLeft(
+function PlayerLeft(
   ctx: Events.Context,
   data: Events.Data<"PlayerLeft">
 ): boolean {
@@ -128,10 +151,7 @@ export function PlayerLeft(
   return true;
 }
 
-export function NewHost(
-  ctx: Events.Context,
-  data: Events.Data<"NewHost">
-): boolean {
+function NewHost(ctx: Events.Context, data: Events.Data<"NewHost">): boolean {
   const { rooms, roomID } = ctx;
   const { newHostID } = data;
 
@@ -144,7 +164,7 @@ export function NewHost(
   return true;
 }
 
-export function RoomChangedSize(
+function RoomChangedSize(
   ctx: Events.Context,
   data: Events.Data<"RoomChangedSize">
 ): boolean {
@@ -160,7 +180,7 @@ export function RoomChangedSize(
   return true;
 }
 
-export function RoomLocked(
+function RoomLocked(
   ctx: Events.Context,
   data: Events.Data<"RoomLocked">
 ): boolean {
@@ -175,7 +195,7 @@ export function RoomLocked(
   return true;
 }
 
-export function RoomUnlocked(
+function RoomUnlocked(
   ctx: Events.Context,
   data: Events.Data<"RoomUnlocked">
 ): boolean {
@@ -190,7 +210,7 @@ export function RoomUnlocked(
   return true;
 }
 
-export function RoomEnabledPassword(
+function RoomEnabledPassword(
   ctx: Events.Context,
   data: Events.Data<"RoomEnabledPassword">
 ): boolean {
@@ -206,7 +226,7 @@ export function RoomEnabledPassword(
   return true;
 }
 
-export function RoomDisabledPassword(
+function RoomDisabledPassword(
   ctx: Events.Context,
   data: Events.Data<"RoomDisabledPassword">
 ): boolean {
@@ -221,7 +241,7 @@ export function RoomDisabledPassword(
   return true;
 }
 
-export function RoomChangedPassword(
+function RoomChangedPassword(
   ctx: Events.Context,
   data: Events.Data<"RoomChangedPassword">
 ): boolean {
@@ -237,7 +257,7 @@ export function RoomChangedPassword(
   return true;
 }
 
-export function GameObjectCreated(
+function GameObjectCreated(
   ctx: Events.Context,
   data: Events.Data<"GameObjectCreated">
 ): boolean {
@@ -255,7 +275,7 @@ export function GameObjectCreated(
 }
 
 // Game Object Events
-export function GameObjectDeleted(
+function GameObjectDeleted(
   ctx: Events.Context,
   data: Events.Data<"GameObjectDeleted">
 ): boolean {
@@ -275,7 +295,7 @@ export function GameObjectDeleted(
   return true;
 }
 
-export function GameObjectMoved(
+function GameObjectMoved(
   ctx: Events.Context,
   data: Events.Data<"GameObjectMoved">
 ): boolean {
@@ -297,7 +317,7 @@ export function GameObjectMoved(
   return true;
 }
 
-export function GameObjectRotated(
+function GameObjectRotated(
   ctx: Events.Context,
   data: Events.Data<"GameObjectRotated">
 ): boolean {
@@ -318,7 +338,7 @@ export function GameObjectRotated(
   return true;
 }
 
-export function GameObjectFlipped(
+function GameObjectFlipped(
   ctx: Events.Context,
   data: Events.Data<"GameObjectFlipped">
 ): boolean {
@@ -340,7 +360,7 @@ export function GameObjectFlipped(
 }
 
 // Deck Specific Events
-export function DeckInsertedCard(
+function DeckInsertedCard(
   ctx: Events.Context,
   data: Events.Data<"DeckInsertedCard">
 ): boolean {
@@ -361,7 +381,7 @@ export function DeckInsertedCard(
   return true;
 }
 
-export function DeckRemovedCard(
+function DeckRemovedCard(
   ctx: Events.Context,
   data: Events.Data<"DeckRemovedCard">
 ): boolean {
@@ -382,7 +402,7 @@ export function DeckRemovedCard(
   return true;
 }
 
-export function DeckRearranged(
+function DeckRearranged(
   ctx: Events.Context,
   data: Events.Data<"DeckRearranged">
 ): boolean {
@@ -410,7 +430,7 @@ export function DeckRearranged(
 }
 
 // Counter Specific Events
-export function CounterUpdated(
+function CounterUpdated(
   ctx: Events.Context,
   data: Events.Data<"CounterUpdated">
 ): boolean {
