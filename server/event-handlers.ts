@@ -145,7 +145,14 @@ export function GameObjectRotated(
   ctx: EventContext,
   data: EventData<"GameObjectRotated">
 ): boolean {
-  return false;
+  const { rooms, roomID } = ctx;
+  const { gameObjectID, angle } = data;
+
+  const obj = rooms.get(roomID)?.gameObjects.get(gameObjectID);
+  if (obj) {
+    obj.angle = angle;
+  }
+  return !!obj;
 }
 
 export function GameObjectFlipped(
