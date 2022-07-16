@@ -74,9 +74,8 @@ function PlayerJoined(
 
   const room = rooms.get(roomID);
 
-  // if room exists, add player to room if allowed
+  // add player to room if it exists
   if (room) {
-    // TODO: check if room is full, locked, or password-enabled
     room.playerIDs.add(playerID);
   }
 
@@ -100,8 +99,6 @@ function PlayerJoined(
       hostPlayerID: playerID,
       gameObjects: new Map(),
     });
-  } else {
-    // TODO: broadcast only if room isn't new
   }
 
   player.roomID = roomID;
