@@ -194,7 +194,16 @@ export function RoomEnabledPassword(
   ctx: Events.Context,
   data: Events.Data<"RoomEnabledPassword">
 ): boolean {
-  return false;
+  const { rooms, roomID } = ctx;
+  const { passwordHash } = data;
+
+  const room = rooms.get(roomID);
+  if (!room) {
+    return false;
+  }
+
+  room.passwordHash = passwordHash;
+  return true;
 }
 
 export function RoomDisabledPassword(
