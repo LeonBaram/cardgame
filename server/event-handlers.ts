@@ -148,7 +148,16 @@ export function RoomChangedSize(
   ctx: Events.Context,
   data: Events.Data<"RoomChangedSize">
 ): boolean {
-  return false;
+  const { rooms, roomID } = ctx;
+  const { newRoomSize } = data;
+
+  const room = rooms.get(roomID);
+  if (!room) {
+    return false;
+  }
+
+  room.size = newRoomSize;
+  return true;
 }
 
 export function RoomLocked(
