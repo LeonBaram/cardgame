@@ -25,7 +25,7 @@ export namespace Client {
 
 export namespace Server {
   type CommonGameObject = {
-    gameObjectType: GameObjectName;
+    gameObjectName: GameObjectName;
     isFaceUp: boolean;
     angle: number;
     x: number;
