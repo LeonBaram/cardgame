@@ -54,7 +54,19 @@ export function broadcast<E extends EventName>(
   }
 
   for (const playerID of room.playerIDs) {
-    players.get(playerID)!.socket.send(data);
+    // for all events other than PlayerJoined, broadcast as normal
+    // for a PlayerJoined event, send existing players the newPlayerID,
+    // and send the new player the existing Room state
+    const { socket } = players.get(playerID)!;
+    if (data.eventName !== "PlayerJoined") {
+      socket.send(data);
+    } else if (playerID === ctx.playerID) {
+      type Data = Events.Data<"PlayerJoined">;
+      socket.send({ ...data, room } as Data);
+    } else {
+      type Data = Events.Data<"PlayerJoined">;
+      socket.send({ ...data, newPlayerID: playerID } as Data);
+    }
   }
 
   return true;
