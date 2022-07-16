@@ -189,7 +189,20 @@ export function DeckInsertedCard(
   ctx: Events.Context,
   data: Events.Data<"DeckInsertedCard">
 ): boolean {
-  return false;
+  const { rooms, roomID } = ctx;
+  const { gameObjectID: deckID, index, scryfallID } = data;
+
+  const room = rooms.get(roomID);
+  if (!room) {
+    return false;
+  }
+
+  const deck = room.gameObjects.get(deckID) as Server.GameObject<"Deck">;
+  if (!deck) {
+    return false;
+  }
+  deck.scryfallIDs.splice(index, 0, scryfallID);
+  return true;
 }
 
 export function DeckRemovedCard(
