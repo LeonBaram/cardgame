@@ -255,5 +255,20 @@ export function CounterUpdated(
   ctx: Events.Context,
   data: Events.Data<"CounterUpdated">
 ): boolean {
-  return false;
+  const { rooms, roomID } = ctx;
+  const { gameObjectID, val } = data;
+
+  const room = rooms.get(roomID);
+  if (!room) {
+    return false;
+  }
+
+  type Counter = Server.GameObject<"Counter">;
+  const counter = room.gameObjects.get(gameObjectID) as Counter;
+  if (!counter) {
+    return false;
+  }
+
+  counter.val = val;
+  return true;
 }
