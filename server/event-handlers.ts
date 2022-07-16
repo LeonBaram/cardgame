@@ -7,7 +7,12 @@ export function PlayerJoined(
   data: Events.Data<"PlayerJoined">
 ): boolean {
   const { players, rooms, playerID, roomID } = ctx;
-  const player = players.get(playerID)!;
+
+  const player = players.get(playerID);
+  if (!player) {
+    return false;
+  }
+
   const room = rooms.get(roomID);
 
   // if room exists, add player to room if allowed
@@ -19,10 +24,13 @@ export function PlayerJoined(
   // leave old room if necessary
   const prevRoomID = player.roomID;
   if (prevRoomID !== null && rooms.has(prevRoomID)) {
-    PlayerLeft(
+    const playerLeft = PlayerLeft(
       { ...ctx, roomID: prevRoomID },
       { ...data, eventName: "PlayerLeft" }
     );
+    if (!playerLeft) {
+      return false;
+    }
   }
 
   // create new room if necessary
@@ -37,7 +45,6 @@ export function PlayerJoined(
   }
 
   player.roomID = roomID;
-
   return true;
 }
 
@@ -46,8 +53,16 @@ export function PlayerLeft(
   data: Events.Data<"PlayerLeft">
 ): boolean {
   const { players, rooms, playerID, roomID } = ctx;
-  const player = players.get(playerID)!;
+
+  const player = players.get(playerID);
+  if (!player) {
+    return false;
+  }
+
   const room = rooms.get(roomID)!;
+  if (!room) {
+    return false;
+  }
 
   room.playerIDs.delete(playerID);
   player.roomID = null;
@@ -70,9 +85,13 @@ export function NewHost(
   data: Events.Data<"NewHost">
 ): boolean {
   const { rooms, roomID } = ctx;
-  const room = rooms.get(roomID)!;
-
   const { newHostID } = data;
+
+  const room = rooms.get(roomID);
+  if (!room) {
+    return false;
+  }
+
   room.hostPlayerID = newHostID;
   return true;
 }
@@ -126,8 +145,14 @@ export function GameObjectCreated(
   const { rooms, roomID } = ctx;
   const { gameObject } = data;
 
+  const room = rooms.get(roomID);
+  if (!room) {
+    return false;
+  }
+
   const gameObjectID = randomUUID();
-  return !!rooms.get(roomID)?.gameObjects.set(gameObjectID, gameObject);
+  room.gameObjects.set(gameObjectID, gameObject);
+  return true;
 }
 
 // Game Object Events
@@ -138,7 +163,17 @@ export function GameObjectDeleted(
   const { rooms, roomID } = ctx;
   const { gameObjectID } = data;
 
-  return rooms.get(roomID)?.gameObjects.delete(gameObjectID) ?? false;
+  const room = rooms.get(roomID);
+  if (!room) {
+    return false;
+  }
+
+  const deleted = room.gameObjects.delete(gameObjectID);
+  if (!deleted) {
+    return false;
+  }
+
+  return true;
 }
 
 export function GameObjectMoved(
@@ -148,12 +183,19 @@ export function GameObjectMoved(
   const { rooms, roomID } = ctx;
   const { gameObjectID, x, y } = data;
 
-  const obj = rooms.get(roomID)?.gameObjects.get(gameObjectID);
-  if (obj) {
-    obj.x = x;
-    obj.y = y;
+  const room = rooms.get(roomID);
+  if (!room) {
+    return false;
   }
-  return !!obj;
+
+  const gameObject = room.gameObjects.get(gameObjectID);
+  if (!gameObject) {
+    return false;
+  }
+
+  gameObject.x = x;
+  gameObject.y = y;
+  return true;
 }
 
 export function GameObjectRotated(
@@ -163,11 +205,18 @@ export function GameObjectRotated(
   const { rooms, roomID } = ctx;
   const { gameObjectID, angle } = data;
 
-  const obj = rooms.get(roomID)?.gameObjects.get(gameObjectID);
-  if (obj) {
-    obj.angle = angle;
+  const room = rooms.get(roomID);
+  if (!room) {
+    return false;
   }
-  return !!obj;
+
+  const gameObject = room.gameObjects.get(gameObjectID);
+  if (!gameObject) {
+    return false;
+  }
+
+  gameObject.angle = angle;
+  return true;
 }
 
 export function GameObjectFlipped(
@@ -177,11 +226,18 @@ export function GameObjectFlipped(
   const { rooms, roomID } = ctx;
   const { gameObjectID, isFaceUp } = data;
 
-  const obj = rooms.get(roomID)?.gameObjects.get(gameObjectID);
-  if (obj) {
-    obj.isFaceUp = isFaceUp;
+  const room = rooms.get(roomID);
+  if (!room) {
+    return false;
   }
-  return !!obj;
+
+  const gameObject = room.gameObjects.get(gameObjectID);
+  if (!gameObject) {
+    return false;
+  }
+
+  gameObject.isFaceUp = isFaceUp;
+  return true;
 }
 
 // Deck Specific Events
@@ -201,6 +257,7 @@ export function DeckInsertedCard(
   if (!deck) {
     return false;
   }
+
   deck.scryfallIDs.splice(index, 0, scryfallID);
   return true;
 }
@@ -221,6 +278,7 @@ export function DeckRemovedCard(
   if (!deck) {
     return false;
   }
+
   deck.scryfallIDs.splice(index, 1);
   return true;
 }
@@ -241,10 +299,12 @@ export function DeckRearranged(
   if (!deck) {
     return false;
   }
+
   const { scryfallIDs } = deck;
   if (scryfallIDs.length !== indices.length) {
     return false;
   }
+
   const rearranged = indices.map((i) => scryfallIDs[i]);
   deck.scryfallIDs = rearranged;
   return true;
