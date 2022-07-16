@@ -190,14 +190,14 @@ export function DeckInsertedCard(
   data: Events.Data<"DeckInsertedCard">
 ): boolean {
   const { rooms, roomID } = ctx;
-  const { gameObjectID: deckID, index, scryfallID } = data;
+  const { gameObjectID, index, scryfallID } = data;
 
   const room = rooms.get(roomID);
   if (!room) {
     return false;
   }
 
-  const deck = room.gameObjects.get(deckID) as Server.GameObject<"Deck">;
+  const deck = room.gameObjects.get(gameObjectID) as Server.GameObject<"Deck">;
   if (!deck) {
     return false;
   }
@@ -210,14 +210,14 @@ export function DeckRemovedCard(
   data: Events.Data<"DeckRemovedCard">
 ): boolean {
   const { rooms, roomID } = ctx;
-  const { gameObjectID: deckID, index } = data;
+  const { gameObjectID, index } = data;
 
   const room = rooms.get(roomID);
   if (!room) {
     return false;
   }
 
-  const deck = room.gameObjects.get(deckID) as Server.GameObject<"Deck">;
+  const deck = room.gameObjects.get(gameObjectID) as Server.GameObject<"Deck">;
   if (!deck) {
     return false;
   }
