@@ -80,7 +80,7 @@ export namespace Events {
 
     // Deck Specific Events
     DeckInsertedCard: GameObjectEvent<"Deck"> & {
-      cardID: string;
+      scryfallID: string;
       index: number;
     };
     DeckRemovedCard: GameObjectEvent<"Deck"> & {
