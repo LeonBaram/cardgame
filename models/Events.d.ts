@@ -84,7 +84,7 @@ export type EventData<E extends EventName> = {
     isFaceUp: boolean;
   };
   GameObjectCopied: GameObjectEvent & {
-    newGameObjectID: string;
+    newGameObjectID?: string;
     x: number;
     y: number;
   };
