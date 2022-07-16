@@ -229,7 +229,25 @@ export function DeckRearranged(
   ctx: Events.Context,
   data: Events.Data<"DeckRearranged">
 ): boolean {
-  return false;
+  const { rooms, roomID } = ctx;
+  const { gameObjectID, indices } = data;
+
+  const room = rooms.get(roomID);
+  if (!room) {
+    return false;
+  }
+
+  const deck = room.gameObjects.get(gameObjectID) as Server.GameObject<"Deck">;
+  if (!deck) {
+    return false;
+  }
+  const { scryfallIDs } = deck;
+  if (scryfallIDs.length !== indices.length) {
+    return false;
+  }
+  const rearranged = indices.map((i) => scryfallIDs[i]);
+  deck.scryfallIDs = rearranged;
+  return true;
 }
 
 // Counter Specific Events
