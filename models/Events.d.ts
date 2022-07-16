@@ -63,7 +63,9 @@ export namespace Events {
     RoomChangedPassword: RoomEvent & { passwordHash: string };
 
     // Game Object Events
-    GameObjectCreated: GameObjectEvent & Server.GameObject<GameObjectName>;
+    GameObjectCreated: GameObjectEvent & {
+      gameObject: Server.GameObject<GameObjectName>;
+    };
     GameObjectDeleted: GameObjectEvent;
     GameObjectMoved: GameObjectEvent & {
       x: number;
