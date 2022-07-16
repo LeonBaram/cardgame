@@ -196,7 +196,20 @@ export function DeckRemovedCard(
   ctx: Events.Context,
   data: Events.Data<"DeckRemovedCard">
 ): boolean {
-  return false;
+  const { rooms, roomID } = ctx;
+  const { gameObjectID: deckID, index } = data;
+
+  const room = rooms.get(roomID);
+  if (!room) {
+    return false;
+  }
+
+  const deck = room.gameObjects.get(deckID) as Server.GameObject<"Deck">;
+  if (!deck) {
+    return false;
+  }
+  deck.scryfallIDs.splice(index, 1);
+  return true;
 }
 
 export function DeckReordered(
