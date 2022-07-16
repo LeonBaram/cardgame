@@ -37,6 +37,8 @@ export namespace Events {
     roomID: string;
   };
 
+  type Handler<E extends EventName> = (ctx: Context, data: Data<E>) => boolean;
+
   type RoomEvent = {};
 
   type GameObjectEvent<G extends GameObjectName = GameObjectName> = {

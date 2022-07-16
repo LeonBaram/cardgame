@@ -1,12 +1,8 @@
 import { Room, Server, Events, EventName } from "../models";
 import { randomUUID } from "crypto";
 
-export interface EventHandler<E extends EventName> {
-  (ctx: Events.Context, data: Events.Data<E>): boolean;
-}
-
 export const handlers: {
-  [E in EventName]: EventHandler<E>;
+  [E in EventName]: Events.Handler<E>;
 } = {
   PlayerJoined,
   PlayerLeft,
@@ -29,8 +25,8 @@ export const handlers: {
 };
 
 export function broadcast<E extends EventName>(
-  handler: EventHandler<E>,
-  ...args: Parameters<EventHandler<E>>
+  handler: Events.Handler<E>,
+  ...args: Parameters<Events.Handler<E>>
 ): boolean {
   if (!handler(...args)) {
     return false;
