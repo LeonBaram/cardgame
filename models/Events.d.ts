@@ -58,7 +58,10 @@ export type CounterEvent = GameObjectEvent & { gameObjectName: "Counter" };
 
 export type EventData<E extends EventName> = {
   // Room Events
-  PlayerJoined: RoomEvent;
+  PlayerJoined: RoomEvent & {
+    newPlayerID?: string;
+    room?: Room;
+  };
   PlayerLeft: RoomEvent;
   NewHost: RoomEvent & { newHostID: string };
   RoomChangedSize: RoomEvent & { newRoomSize: number };
