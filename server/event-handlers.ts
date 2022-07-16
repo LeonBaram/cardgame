@@ -130,7 +130,15 @@ export function GameObjectMoved(
   ctx: EventContext,
   data: EventData<"GameObjectMoved">
 ): boolean {
-  return false;
+  const { rooms, roomID } = ctx;
+  const { gameObjectID, x, y } = data;
+
+  const obj = rooms.get(roomID)?.gameObjects.get(gameObjectID);
+  if (obj) {
+    obj.x = x;
+    obj.y = y;
+  }
+  return !!obj;
 }
 
 export function GameObjectRotated(
