@@ -84,13 +84,6 @@ function PlayerJoined(
     return false;
   }
 
-  const room = rooms.get(roomID);
-
-  // add player to room if it exists
-  if (room) {
-    room.playerIDs.add(playerID);
-  }
-
   // leave old room if necessary
   const prevRoomID = player.roomID;
   if (prevRoomID !== null && rooms.has(prevRoomID)) {
@@ -104,8 +97,11 @@ function PlayerJoined(
     }
   }
 
-  // create new room if necessary
-  if (!room) {
+  // create new room or add to existing, as necessary
+  const room = rooms.get(roomID);
+  if (room) {
+    room.playerIDs.add(playerID);
+  } else {
     rooms.set(roomID, <Room>{
       playerIDs: new Set(playerID),
       hostPlayerID: playerID,
