@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "web app for playing cards",
   "scripts": {
-    "dev": "concurrently \"npx parcel watch --dist-dir dist/client\" \"npx tsc -w\" \"npx nodemon dist/server\""
+    "dev": "concurrently \"parcel watch --dist-dir dist/client\" \"tsc -w\" \"nodemon dist/server\""
   },
   "repository": {
     "type": "git",
