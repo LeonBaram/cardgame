@@ -90,10 +90,10 @@ export type EventData<E extends EventName> = {
   };
 
   // Card Specific Events
-  CardCreated: CardEvent & Server.GameObjectData["Card"];
+  CardCreated: CardEvent & Server.GameObjectData<"Card">;
 
   // Deck Specific Events
-  DeckCreated: DeckEvent & Server.GameObjectData["Deck"];
+  DeckCreated: DeckEvent & Server.GameObjectData<"Deck">;
   DeckInsertedCard: DeckEvent & {
     cardID: string;
     index: number;
@@ -106,7 +106,7 @@ export type EventData<E extends EventName> = {
   };
 
   // Counter Specific Events
-  CounterCreated: CounterEvent & Server.GameObjectData["Counter"];
+  CounterCreated: CounterEvent & Server.GameObjectData<"Counter">;
   CounterUpdated: CounterEvent & {
     val: number;
   };

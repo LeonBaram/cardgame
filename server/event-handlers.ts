@@ -183,7 +183,7 @@ export function GameObjectCopied(
     const newGameObjectID = randomUUID();
     switch (obj.gameObjectName) {
       case "Card": {
-        const { scryfallID } = obj as Server.GameObjects["Card"];
+        const { scryfallID } = obj as Server.GameObject<"Card">;
         return CardCreated(ctx, {
           eventName: "CardCreated",
           gameObjectID: newGameObjectID,
@@ -192,7 +192,7 @@ export function GameObjectCopied(
         });
       }
       case "Deck": {
-        const { scryfallIDs } = obj as Server.GameObjects["Deck"];
+        const { scryfallIDs } = obj as Server.GameObject<"Deck">;
         return DeckCreated(ctx, {
           eventName: "DeckCreated",
           gameObjectID: newGameObjectID,
@@ -201,7 +201,7 @@ export function GameObjectCopied(
         });
       }
       case "Counter": {
-        const { val } = obj as Server.GameObjects["Counter"];
+        const { val } = obj as Server.GameObject<"Counter">;
         return CounterCreated(ctx, {
           eventName: "CounterCreated",
           gameObjectID: newGameObjectID,
