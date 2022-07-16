@@ -16,20 +16,16 @@ export type EventName =
   | "RoomDisabledPassword"
   | "RoomChangedPassword"
   // Game Object Events
+  | "GameObjectCreated"
   | "GameObjectDeleted"
   | "GameObjectMoved"
   | "GameObjectRotated"
   | "GameObjectFlipped"
-  | "GameObjectCopied"
-  // Card Specific Events
-  | "CardCreated"
   // Deck Specific Events
-  | "DeckCreated"
   | "DeckInsertedCard"
   | "DeckRemovedCard"
   | "DeckReordered"
   // Counter Specific Events
-  | "CounterCreated"
   | "CounterUpdated";
 
 export namespace Events {
@@ -67,6 +63,7 @@ export namespace Events {
     RoomChangedPassword: RoomEvent & { passwordHash: string };
 
     // Game Object Events
+    GameObjectCreated: GameObjectEvent & Server.GameObject<GameObjectName>;
     GameObjectDeleted: GameObjectEvent;
     GameObjectMoved: GameObjectEvent & {
       x: number;
@@ -78,17 +75,8 @@ export namespace Events {
     GameObjectFlipped: GameObjectEvent & {
       isFaceUp: boolean;
     };
-    GameObjectCopied: GameObjectEvent & {
-      newGameObjectID?: string;
-      x: number;
-      y: number;
-    };
-
-    // Card Specific Events
-    CardCreated: GameObjectCreated<"Card">;
 
     // Deck Specific Events
-    DeckCreated: GameObjectCreated<"Deck">;
     DeckInsertedCard: GameObjectEvent<"Deck"> & {
       cardID: string;
       index: number;
@@ -101,7 +89,6 @@ export namespace Events {
     };
 
     // Counter Specific Events
-    CounterCreated: GameObjectCreated<"Counter">;
     CounterUpdated: GameObjectEvent<"Counter"> & {
       val: number;
     };

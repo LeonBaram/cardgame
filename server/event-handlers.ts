@@ -19,7 +19,10 @@ export function PlayerJoined(
   // leave old room if necessary
   const prevRoomID = player.roomID;
   if (prevRoomID !== null && rooms.has(prevRoomID)) {
-    PlayerLeft({ ...ctx, roomID: prevRoomID }, data);
+    PlayerLeft(
+      { ...ctx, roomID: prevRoomID },
+      { ...data, eventName: "PlayerLeft" }
+    );
   }
 
   // create new room if necessary
@@ -56,7 +59,7 @@ export function PlayerLeft(
   // choose new host if necessary
   else if (room.hostPlayerID === playerID) {
     const newHostID = [...room.playerIDs][0];
-    NewHost(ctx, { ...data, newHostID });
+    NewHost(ctx, { ...data, eventName: "NewHost", newHostID });
   }
 
   return true;
@@ -170,65 +173,7 @@ export function GameObjectFlipped(
   return !!obj;
 }
 
-export function GameObjectCopied(
-  ctx: Events.Context,
-  data: Events.Data<"GameObjectCopied">
-): boolean {
-  const { rooms, roomID } = ctx;
-  const { gameObjectID } = data;
-
-  const obj = rooms.get(roomID)?.gameObjects.get(gameObjectID);
-  if (obj) {
-    const newGameObjectID = randomUUID();
-    switch (obj.gameObjectName) {
-      case "Card": {
-        const { scryfallID } = obj as Server.GameObject<"Card">;
-        return CardCreated(ctx, {
-          eventName: "CardCreated",
-          gameObjectID: newGameObjectID,
-          gameObjectName: "Card",
-          scryfallID,
-        });
-      }
-      case "Deck": {
-        const { scryfallIDs } = obj as Server.GameObject<"Deck">;
-        return DeckCreated(ctx, {
-          eventName: "DeckCreated",
-          gameObjectID: newGameObjectID,
-          gameObjectName: "Deck",
-          scryfallIDs,
-        });
-      }
-      case "Counter": {
-        const { val } = obj as Server.GameObject<"Counter">;
-        return CounterCreated(ctx, {
-          eventName: "CounterCreated",
-          gameObjectID: newGameObjectID,
-          gameObjectName: "Counter",
-          val,
-        });
-      }
-    }
-  }
-  return false;
-}
-
-// Card Specific Events
-export function CardCreated(
-  ctx: Events.Context,
-  data: Events.Data<"CardCreated">
-): boolean {
-  return false;
-}
-
 // Deck Specific Events
-export function DeckCreated(
-  ctx: Events.Context,
-  data: Events.Data<"DeckCreated">
-): boolean {
-  return false;
-}
-
 export function DeckInsertedCard(
   ctx: Events.Context,
   data: Events.Data<"DeckInsertedCard">
@@ -251,13 +196,6 @@ export function DeckReordered(
 }
 
 // Counter Specific Events
-export function CounterCreated(
-  ctx: Events.Context,
-  data: Events.Data<"CounterCreated">
-): boolean {
-  return false;
-}
-
 export function CounterUpdated(
   ctx: Events.Context,
   data: Events.Data<"CounterUpdated">
