@@ -2,11 +2,11 @@ import { randomUUID } from "crypto";
 import * as express from "express";
 import { createServer } from "http";
 import { Server as WebSocketServer } from "ws";
-import { createEventHandlers } from "./event-handlers";
+import { handlers, broadcast } from "./event-handlers";
 
 import type { IncomingMessage } from "http";
 import type { WebSocket } from "ws";
-import type { AnyEvent, EventHandler, Player, Room } from "../models";
+import type { EventName, Events, Player, Room } from "../models";
 
 const app = express();
 app
@@ -22,32 +22,58 @@ const socketServer = new WebSocketServer({
 
 const players = new Map<string, Player>();
 const rooms = new Map<string, Room>();
-const eventHandlers = createEventHandlers({ rooms, players, socketServer });
 
 socketServer.on("connection", (socket: WebSocket, req: IncomingMessage) => {
+  const roomID = parseRoomID(req);
+  if (roomID === null) {
+    return;
+  }
+
   const playerID = randomUUID();
-  const roomID = new URL(
-    req.url!,
-    `http://${req.headers.host}`
-  ).searchParams.get("roomID")!;
   players.set(playerID, <Player>{ roomID, socket });
-  eventHandlers.PlayerJoined({ eventName: "PlayerJoined", roomID, playerID });
+
+  const ctx: Events.Context = {
+    socketServer,
+    players,
+    rooms,
+    playerID,
+    roomID,
+  };
+
+  broadcast(handlers.PlayerJoined, ctx, { eventName: "PlayerJoined" });
 
   console.table(rooms);
   console.table(players);
 
-  socket.on("message", (event: AnyEvent) => {
-    const { eventName } = event;
-    type HandlerType = EventHandler<typeof eventName>;
-    const handleEvent = eventHandlers[eventName] as HandlerType;
-    handleEvent({ ...event, playerID });
-  });
+  socket.on("message", <E extends EventName>(data: Events.Data<E>) =>
+    broadcast(handlers[data.eventName], ctx, data)
+  );
 
   socket.on("close", () => {
-    eventHandlers.PlayerLeft({ eventName: "PlayerLeft", roomID, playerID });
+    broadcast(handlers.PlayerLeft, ctx, { eventName: "PlayerLeft" });
+    players.delete(playerID);
   });
 });
 
 httpServer.listen(process.env.PORT ?? 3000, () =>
   console.log(`listening on 3000`)
 );
+
+function parseRoomID(req: IncomingMessage): string | null {
+  const { url } = req;
+  if (!url) {
+    return null;
+  }
+
+  const { host } = req.headers;
+  if (!host) {
+    return null;
+  }
+
+  const roomID = new URL(url, `http://${host}`).searchParams.get("roomID");
+  if (!roomID) {
+    return null;
+  }
+
+  return roomID;
+}
