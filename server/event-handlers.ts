@@ -1,5 +1,45 @@
-import { Room, Server, Events } from "../models";
+import { Room, Server, Events, EventName } from "../models";
 import { randomUUID } from "crypto";
+
+interface EventHandler<E extends EventName> {
+  (ctx: Events.Context, data: Events.Data<E>): boolean;
+}
+
+export function broadcast<E extends EventName>(
+  handler: EventHandler<E>,
+  ...args: Parameters<EventHandler<E>>
+): boolean {
+  if (!handler(...args)) {
+    return false;
+  }
+
+  const [ctx, data] = args;
+  const { socketServer, rooms, roomID, players } = ctx;
+  const {} = data;
+
+  const room = rooms.get(roomID);
+  if (!room) {
+    return false;
+  }
+
+  for (const playerID of room.playerIDs) {
+    const player = players.get(playerID);
+    if (!player) {
+      return false;
+    }
+
+    const { socket } = player;
+    if (!socketServer.clients.has(socket)) {
+      return false;
+    }
+  }
+
+  for (const playerID of room.playerIDs) {
+    players.get(playerID)!.socket.send(data);
+  }
+
+  return true;
+}
 
 // Room Events
 export function PlayerJoined(
@@ -24,7 +64,8 @@ export function PlayerJoined(
   // leave old room if necessary
   const prevRoomID = player.roomID;
   if (prevRoomID !== null && rooms.has(prevRoomID)) {
-    const playerLeft = PlayerLeft(
+    const playerLeft = broadcast(
+      PlayerLeft,
       { ...ctx, roomID: prevRoomID },
       { ...data, eventName: "PlayerLeft" }
     );
@@ -74,7 +115,14 @@ export function PlayerLeft(
   // choose new host if necessary
   else if (room.hostPlayerID === playerID) {
     const newHostID = [...room.playerIDs][0];
-    NewHost(ctx, { ...data, eventName: "NewHost", newHostID });
+    const newHost = broadcast(NewHost, ctx, {
+      ...data,
+      eventName: "NewHost",
+      newHostID,
+    });
+    if (!newHost) {
+      return false;
+    }
   }
 
   return true;
