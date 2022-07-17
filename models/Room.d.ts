@@ -1,9 +1,9 @@
-import { GameObjectName, Server } from "./GameObjects";
+import type { Client, Server } from "./GameObjects";
 
 export type Room = {
   playerIDs: Set<string>;
   hostPlayerID: string;
-  gameObjects: Map<string, Server.GameObject<GameObjectName>>;
+  gameObjects: Map<string, Client.GameObject | Server.GameObject>;
   size: number;
   isLocked: boolean;
   passwordHash: string | null;
