@@ -64,7 +64,7 @@ export function broadcast<E extends EventName>(
         if (playerID === ctx.playerID) {
           socket.send({ ...data, room } as Data);
         } else {
-          socket.send({ ...data, newPlayerID: playerID } as Data);
+          socket.send({ ...data, newPlayerID: ctx.playerID } as Data);
         }
         break;
       }
