@@ -27,6 +27,13 @@ function PlayerJoined(
   ctx: Events.Context<"Client">,
   data: Events.Data<"PlayerJoined">
 ): boolean {
+  if ("newPlayerID" in data && ctx.room !== null) {
+    ctx.room.playerIDs.add(data.newPlayerID);
+  } else if ("room" in data && ctx.room === null) {
+    const { gameObjects, ...room } = data.room;
+    ctx.room = { ...room, gameObjects: new Map() };
+    // TODO: hydrate gameObjects
+  }
   return false;
 }
 
