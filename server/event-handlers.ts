@@ -68,6 +68,11 @@ export function broadcast<E extends EventName>(
         }
         break;
       }
+      case "PlayerLeft": {
+        type Data = Events.Data<"PlayerLeft">;
+        socket.send({ ...data, departedPlayerID: ctx.playerID } as Data);
+        break;
+      }
       default: {
         socket.send(data);
         break;
@@ -96,7 +101,7 @@ function PlayerJoined(
     const playerLeft = broadcast(
       PlayerLeft,
       { ...ctx, roomID: prevRoomID },
-      { ...data, eventName: "PlayerLeft" }
+      { ...data, eventName: "PlayerLeft", departedPlayerID: playerID }
     );
     if (!playerLeft) {
       return false;

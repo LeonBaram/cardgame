@@ -61,7 +61,7 @@ export namespace Events {
     // Room Events
     PlayerJoined: RoomEvent &
       ({ newPlayerID: string } | { room: Room<"Server"> });
-    PlayerLeft: RoomEvent;
+    PlayerLeft: RoomEvent & { departedPlayerID: string };
     NewHost: RoomEvent & { newHostID: string };
     RoomChangedSize: RoomEvent & { newRoomSize: number };
     RoomLocked: RoomEvent;
