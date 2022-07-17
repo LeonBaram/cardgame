@@ -1,13 +1,7 @@
 import type { Events, EventName } from "../../models";
 
-type Context = {};
-
-interface Handler<E extends EventName> {
-  (ctx: Context, data: Events.Data<E>): boolean;
-}
-
 export const handlers: {
-  [E in EventName]: Handler<E>;
+  [E in EventName]: Events.Handler<"Client", E>;
 } = {
   PlayerJoined,
   PlayerLeft,
@@ -30,117 +24,126 @@ export const handlers: {
 };
 
 function PlayerJoined(
-  ctx: Context,
+  ctx: Events.Context<"Client">,
   data: Events.Data<"PlayerJoined">
 ): boolean {
   return false;
 }
 
-function PlayerLeft(ctx: Context, data: Events.Data<"PlayerLeft">): boolean {
+function PlayerLeft(
+  ctx: Events.Context<"Client">,
+  data: Events.Data<"PlayerLeft">
+): boolean {
   return false;
 }
 
-function NewHost(ctx: Context, data: Events.Data<"NewHost">): boolean {
+function NewHost(
+  ctx: Events.Context<"Client">,
+  data: Events.Data<"NewHost">
+): boolean {
   return false;
 }
 
 function RoomChangedSize(
-  ctx: Context,
+  ctx: Events.Context<"Client">,
   data: Events.Data<"RoomChangedSize">
 ): boolean {
   return false;
 }
 
-function RoomLocked(ctx: Context, data: Events.Data<"RoomLocked">): boolean {
+function RoomLocked(
+  ctx: Events.Context<"Client">,
+  data: Events.Data<"RoomLocked">
+): boolean {
   return false;
 }
 
 function RoomUnlocked(
-  ctx: Context,
+  ctx: Events.Context<"Client">,
   data: Events.Data<"RoomUnlocked">
 ): boolean {
   return false;
 }
 
 function RoomEnabledPassword(
-  ctx: Context,
+  ctx: Events.Context<"Client">,
   data: Events.Data<"RoomEnabledPassword">
 ): boolean {
   return false;
 }
 
 function RoomDisabledPassword(
-  ctx: Context,
+  ctx: Events.Context<"Client">,
   data: Events.Data<"RoomDisabledPassword">
 ): boolean {
   return false;
 }
 
 function RoomChangedPassword(
-  ctx: Context,
+  ctx: Events.Context<"Client">,
   data: Events.Data<"RoomChangedPassword">
 ): boolean {
   return false;
 }
 
 function GameObjectCreated(
-  ctx: Context,
+  ctx: Events.Context<"Client">,
   data: Events.Data<"GameObjectCreated">
 ): boolean {
   return false;
 }
 
 function GameObjectDeleted(
-  ctx: Context,
+  ctx: Events.Context<"Client">,
   data: Events.Data<"GameObjectDeleted">
 ): boolean {
   return false;
 }
 
 function GameObjectMoved(
-  ctx: Context,
+  ctx: Events.Context<"Client">,
   data: Events.Data<"GameObjectMoved">
 ): boolean {
   return false;
 }
 
 function GameObjectRotated(
-  ctx: Context,
+  ctx: Events.Context<"Client">,
   data: Events.Data<"GameObjectRotated">
 ): boolean {
   return false;
 }
 
 function GameObjectFlipped(
-  ctx: Context,
+  ctx: Events.Context<"Client">,
   data: Events.Data<"GameObjectFlipped">
 ): boolean {
   return false;
 }
 
 function DeckInsertedCard(
-  ctx: Context,
+  ctx: Events.Context<"Client">,
   data: Events.Data<"DeckInsertedCard">
 ): boolean {
   return false;
 }
 
 function DeckRemovedCard(
-  ctx: Context,
+  ctx: Events.Context<"Client">,
   data: Events.Data<"DeckRemovedCard">
 ): boolean {
   return false;
 }
 
 function DeckRearranged(
-  ctx: Context,
+  ctx: Events.Context<"Client">,
   data: Events.Data<"DeckRearranged">
 ): boolean {
   return false;
 }
 
 function CounterUpdated(
-  ctx: Context,
+  ctx: Events.Context<"Client">,
   data: Events.Data<"CounterUpdated">
 ): boolean {
   return false;

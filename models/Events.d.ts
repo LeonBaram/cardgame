@@ -29,15 +29,23 @@ export type EventName =
   | "CounterUpdated";
 
 export namespace Events {
-  type Context = {
-    socketServer: WebSocketServer;
-    players: Map<string, Player>;
-    rooms: Map<string, Room<"Server">>;
-    playerID: string;
-    roomID: string;
-  };
+  type Context<T extends "Server" | "Client"> = {
+    Server: {
+      socketServer: WebSocketServer;
+      players: Map<string, Player>;
+      rooms: Map<string, Room<"Server">>;
+      playerID: string;
+      roomID: string;
+    };
+    Client: {
+      room: Room<"Client">;
+    };
+  }[T];
 
-  type Handler<E extends EventName> = (ctx: Context, data: Data<E>) => boolean;
+  type Handler<T extends "Server" | "Client", E extends EventName> = (
+    ctx: Context<T>,
+    data: Data<E>
+  ) => boolean;
 
   type RoomEvent = {};
 

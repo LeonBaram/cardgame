@@ -2,7 +2,7 @@ import type { Room, Server, Events, EventName } from "../models";
 import { randomUUID } from "crypto";
 
 export const handlers: {
-  [E in EventName]: Events.Handler<E>;
+  [E in EventName]: Events.Handler<"Server", E>;
 } = {
   PlayerJoined,
   PlayerLeft,
@@ -25,8 +25,8 @@ export const handlers: {
 };
 
 export function broadcast<E extends EventName>(
-  handler: Events.Handler<E>,
-  ...args: Parameters<Events.Handler<E>>
+  handler: Events.Handler<"Server", E>,
+  ...args: Parameters<Events.Handler<"Server", E>>
 ): boolean {
   if (!handler(...args)) {
     return false;
@@ -74,7 +74,7 @@ export function broadcast<E extends EventName>(
 
 // Room Events
 function PlayerJoined(
-  ctx: Events.Context,
+  ctx: Events.Context<"Server">,
   data: Events.Data<"PlayerJoined">
 ): boolean {
   const { players, rooms, playerID, roomID } = ctx;
@@ -102,7 +102,7 @@ function PlayerJoined(
   if (room) {
     room.playerIDs.add(playerID);
   } else {
-    rooms.set(roomID, <Room>{
+    rooms.set(roomID, <Room<"Server">>{
       playerIDs: new Set(playerID),
       hostPlayerID: playerID,
       gameObjects: new Map(),
@@ -114,7 +114,7 @@ function PlayerJoined(
 }
 
 function PlayerLeft(
-  ctx: Events.Context,
+  ctx: Events.Context<"Server">,
   data: Events.Data<"PlayerLeft">
 ): boolean {
   const { players, rooms, playerID, roomID } = ctx;
@@ -152,7 +152,10 @@ function PlayerLeft(
   return true;
 }
 
-function NewHost(ctx: Events.Context, data: Events.Data<"NewHost">): boolean {
+function NewHost(
+  ctx: Events.Context<"Server">,
+  data: Events.Data<"NewHost">
+): boolean {
   const { rooms, roomID } = ctx;
   const { newHostID } = data;
 
@@ -166,7 +169,7 @@ function NewHost(ctx: Events.Context, data: Events.Data<"NewHost">): boolean {
 }
 
 function RoomChangedSize(
-  ctx: Events.Context,
+  ctx: Events.Context<"Server">,
   data: Events.Data<"RoomChangedSize">
 ): boolean {
   const { rooms, roomID } = ctx;
@@ -182,7 +185,7 @@ function RoomChangedSize(
 }
 
 function RoomLocked(
-  ctx: Events.Context,
+  ctx: Events.Context<"Server">,
   data: Events.Data<"RoomLocked">
 ): boolean {
   const { rooms, roomID } = ctx;
@@ -197,7 +200,7 @@ function RoomLocked(
 }
 
 function RoomUnlocked(
-  ctx: Events.Context,
+  ctx: Events.Context<"Server">,
   data: Events.Data<"RoomUnlocked">
 ): boolean {
   const { rooms, roomID } = ctx;
@@ -212,7 +215,7 @@ function RoomUnlocked(
 }
 
 function RoomEnabledPassword(
-  ctx: Events.Context,
+  ctx: Events.Context<"Server">,
   data: Events.Data<"RoomEnabledPassword">
 ): boolean {
   const { rooms, roomID } = ctx;
@@ -228,7 +231,7 @@ function RoomEnabledPassword(
 }
 
 function RoomDisabledPassword(
-  ctx: Events.Context,
+  ctx: Events.Context<"Server">,
   data: Events.Data<"RoomDisabledPassword">
 ): boolean {
   const { rooms, roomID } = ctx;
@@ -243,7 +246,7 @@ function RoomDisabledPassword(
 }
 
 function RoomChangedPassword(
-  ctx: Events.Context,
+  ctx: Events.Context<"Server">,
   data: Events.Data<"RoomChangedPassword">
 ): boolean {
   const { rooms, roomID } = ctx;
@@ -259,7 +262,7 @@ function RoomChangedPassword(
 }
 
 function GameObjectCreated(
-  ctx: Events.Context,
+  ctx: Events.Context<"Server">,
   data: Events.Data<"GameObjectCreated">
 ): boolean {
   const { rooms, roomID } = ctx;
@@ -277,7 +280,7 @@ function GameObjectCreated(
 
 // Game Object Events
 function GameObjectDeleted(
-  ctx: Events.Context,
+  ctx: Events.Context<"Server">,
   data: Events.Data<"GameObjectDeleted">
 ): boolean {
   const { rooms, roomID } = ctx;
@@ -297,7 +300,7 @@ function GameObjectDeleted(
 }
 
 function GameObjectMoved(
-  ctx: Events.Context,
+  ctx: Events.Context<"Server">,
   data: Events.Data<"GameObjectMoved">
 ): boolean {
   const { rooms, roomID } = ctx;
@@ -319,7 +322,7 @@ function GameObjectMoved(
 }
 
 function GameObjectRotated(
-  ctx: Events.Context,
+  ctx: Events.Context<"Server">,
   data: Events.Data<"GameObjectRotated">
 ): boolean {
   const { rooms, roomID } = ctx;
@@ -340,7 +343,7 @@ function GameObjectRotated(
 }
 
 function GameObjectFlipped(
-  ctx: Events.Context,
+  ctx: Events.Context<"Server">,
   data: Events.Data<"GameObjectFlipped">
 ): boolean {
   const { rooms, roomID } = ctx;
@@ -362,7 +365,7 @@ function GameObjectFlipped(
 
 // Deck Specific Events
 function DeckInsertedCard(
-  ctx: Events.Context,
+  ctx: Events.Context<"Server">,
   data: Events.Data<"DeckInsertedCard">
 ): boolean {
   const { rooms, roomID } = ctx;
@@ -383,7 +386,7 @@ function DeckInsertedCard(
 }
 
 function DeckRemovedCard(
-  ctx: Events.Context,
+  ctx: Events.Context<"Server">,
   data: Events.Data<"DeckRemovedCard">
 ): boolean {
   const { rooms, roomID } = ctx;
@@ -404,7 +407,7 @@ function DeckRemovedCard(
 }
 
 function DeckRearranged(
-  ctx: Events.Context,
+  ctx: Events.Context<"Server">,
   data: Events.Data<"DeckRearranged">
 ): boolean {
   const { rooms, roomID } = ctx;
@@ -432,7 +435,7 @@ function DeckRearranged(
 
 // Counter Specific Events
 function CounterUpdated(
-  ctx: Events.Context,
+  ctx: Events.Context<"Server">,
   data: Events.Data<"CounterUpdated">
 ): boolean {
   const { rooms, roomID } = ctx;
