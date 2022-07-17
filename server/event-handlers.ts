@@ -54,9 +54,11 @@ export function broadcast<E extends EventName>(
   }
 
   for (const playerID of room.playerIDs) {
-    // for all events other than PlayerJoined, broadcast as normal
-    // for a PlayerJoined event, send existing players the newPlayerID,
-    // and send the new player the existing Room state
+    // for a PlayerJoined event, send the new player the Room state,
+    // and send other players the newPlayerID
+    // for a PlayerLeft event, close the departing player's socket,
+    // and send other players the departedPlayerID
+    // for other events, broadcast as normal
     const { socket } = players.get(playerID)!;
     switch (data.eventName) {
       case "PlayerJoined": {
@@ -70,7 +72,11 @@ export function broadcast<E extends EventName>(
       }
       case "PlayerLeft": {
         type Data = Events.Data<"PlayerLeft">;
-        socket.send({ ...data, departedPlayerID: ctx.playerID } as Data);
+        if (playerID === ctx.playerID) {
+          socket.close();
+        } else {
+          socket.send({ ...data, departedPlayerID: ctx.playerID } as Data);
+        }
         break;
       }
       default: {
