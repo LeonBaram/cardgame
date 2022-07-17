@@ -3,6 +3,7 @@ import type { ScryfallCardData } from "./ScryfallCardData";
 
 export type GameObjectName = "Card" | "Deck" | "Counter";
 
+/// <reference path="Client.d.ts" />
 export namespace Client {
   type GameObjectData<G extends GameObjectName> = {
     Card: { data: ScryfallCardData };
@@ -16,6 +17,7 @@ export namespace Client {
   };
 }
 
+/// <reference path="Server.d.ts" />
 export namespace Server {
   type GameObjectData<G extends GameObjectName> = {
     Card: { scryfallID: string };
