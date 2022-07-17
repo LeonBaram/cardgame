@@ -38,7 +38,7 @@ export namespace Events {
       roomID: string;
     };
     Client: {
-      room: Room<"Client">;
+      room: Room<"Client"> | null;
     };
   }[T];
 
