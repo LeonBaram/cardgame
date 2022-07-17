@@ -32,7 +32,7 @@ export namespace Events {
   type Context = {
     socketServer: WebSocketServer;
     players: Map<string, Player>;
-    rooms: Map<string, Room>;
+    rooms: Map<string, Room<"Server">>;
     playerID: string;
     roomID: string;
   };
@@ -51,7 +51,8 @@ export namespace Events {
 
   type Data<E extends EventName> = { eventName: E } & {
     // Room Events
-    PlayerJoined: RoomEvent & ({ newPlayerID: string } | { room: Room });
+    PlayerJoined: RoomEvent &
+      ({ newPlayerID: string } | { room: Room<"Server"> });
     PlayerLeft: RoomEvent;
     NewHost: RoomEvent & { newHostID: string };
     RoomChangedSize: RoomEvent & { newRoomSize: number };

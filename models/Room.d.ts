@@ -1,9 +1,12 @@
 import type { Client, Server } from "./GameObjects";
 
-export type Room = {
+export type Room<T extends "Server" | "Client"> = {
   playerIDs: Set<string>;
   hostPlayerID: string;
-  gameObjects: Map<string, Client.GameObject | Server.GameObject>;
+  gameObjects: Map<
+    string,
+    T extends "Server" ? Server.GameObject : Client.GameObject
+  >;
   size: number;
   isLocked: boolean;
   passwordHash: string | null;
