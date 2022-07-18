@@ -1,4 +1,10 @@
-import type { Events, EventName } from "../../models";
+import type {
+  Events,
+  EventName,
+  Server,
+  GameObjectName,
+  Client,
+} from "../../models";
 
 export const handlers: {
   [E in EventName]: Events.Handler<"Client", E>;

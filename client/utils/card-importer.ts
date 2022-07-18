@@ -1,4 +1,4 @@
-import { ScryfallCardData } from "../models/external/ScryfallCardData";
+import type { ScryfallCardData } from "../../models";
 
 const scryfallAPI = "https://api.scryfall.com";
 
