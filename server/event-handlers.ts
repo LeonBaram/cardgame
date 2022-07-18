@@ -393,7 +393,7 @@ function DeckInsertedCard(
     return false;
   }
 
-  const deck = room.gameObjects.get(gameObjectID) as Server.GameObject<"Deck">;
+  const deck = room.gameObjects.get(gameObjectID) as Server.Deck;
   if (!deck) {
     return false;
   }
@@ -414,7 +414,7 @@ function DeckRemovedCard(
     return false;
   }
 
-  const deck = room.gameObjects.get(gameObjectID) as Server.GameObject<"Deck">;
+  const deck = room.gameObjects.get(gameObjectID) as Server.Deck;
   if (!deck) {
     return false;
   }
@@ -435,7 +435,7 @@ function DeckRearranged(
     return false;
   }
 
-  const deck = room.gameObjects.get(gameObjectID) as Server.GameObject<"Deck">;
+  const deck = room.gameObjects.get(gameObjectID) as Server.Deck;
   if (!deck) {
     return false;
   }
@@ -463,7 +463,7 @@ function CounterUpdated(
     return false;
   }
 
-  type Counter = Server.GameObject<"Counter">;
+  type Counter = Server.Counter;
   const counter = room.gameObjects.get(gameObjectID) as Counter;
   if (!counter) {
     return false;

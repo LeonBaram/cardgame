@@ -15,6 +15,10 @@ export namespace Client {
       sprite: Phaser.GameObjects.Image;
       gameObjectName: G;
     };
+
+  type Card = GameObject<"Card">;
+  type Deck = GameObject<"Deck">;
+  type Counter = GameObject<"Counter">;
 }
 
 export namespace Server {
@@ -32,4 +36,8 @@ export namespace Server {
       x: number;
       y: number;
     };
+
+  type Card = GameObject<"Card">;
+  type Deck = GameObject<"Deck">;
+  type Counter = GameObject<"Counter">;
 }
