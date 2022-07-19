@@ -64,6 +64,7 @@ export namespace Events {
     PlayerJoined: RoomEvent & {
       newPlayerID?: string;
       room?: Room<"Server">;
+      passwordHash?: string;
     };
     PlayerLeft: RoomEvent & { departedPlayerID?: string };
     NewHost: RoomEvent & { newHostID: string };
