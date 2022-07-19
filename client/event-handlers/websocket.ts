@@ -74,6 +74,13 @@ function NewHost(
   ctx: Events.Context<"Client">,
   data: Events.Data<"NewHost">
 ): boolean {
+  const { room } = ctx;
+  const { newHostID } = data;
+
+  if (room?.playerIDs.has(newHostID)) {
+    room.hostPlayerID = newHostID;
+    return true;
+  }
   return false;
 }
 
