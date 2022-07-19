@@ -29,40 +29,30 @@ export const handlers: {
   CounterUpdated,
 };
 
-// function hydrate<G extends GameObjectName>(
-//   gameObject: Server.GameObject<G>
-// ): Client.GameObject<G> {
-//   switch (gameObject.gameObjectName) {
-//     case "Card": {
-//       break;
-//     }
-//     case "Deck": {
-//       break;
-//     }
-//     case "Counter": {
-//       break;
-//     }
-//   }
-// }
+function hydrate<G extends GameObjectName>([gameObjectID, gameObject]: [
+  string,
+  Server.GameObject<G>
+]): [string, Client.GameObject<G>] {
+  // TODO: implement hydration
+  return [gameObjectID, {} as Client.GameObject<G>];
+}
 
 function PlayerJoined(
   ctx: Events.Context<"Client">,
   data: Events.Data<"PlayerJoined">
 ): boolean {
-  if ("newPlayerID" in data && ctx.room !== null) {
-    ctx.room.playerIDs.add(data.newPlayerID!);
-  } else if ("room" in data && ctx.room === null) {
-    const { gameObjects, ...room } = data.room;
-    ctx.room = {
-      ...room,
-      gameObjects: new Map(
-        [...gameObjects].map(([gameObjectID, gameObject]) => [
-          gameObjectID,
-          {} as Client.GameObject<"Card">,
-        ])
-      ),
-    };
-    // TODO: hydrate gameObjects
+  const { room } = ctx;
+  const { newPlayerID } = data;
+
+  if (room && newPlayerID) {
+    room.playerIDs.add(newPlayerID);
+
+    return true;
+  } else if (room === null && data.room) {
+    const gameObjects = new Map([...data.room.gameObjects].map(hydrate));
+
+    ctx.room = { ...data.room, gameObjects };
+    return true;
   }
   return false;
 }
