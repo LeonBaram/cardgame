@@ -29,6 +29,22 @@ export const handlers: {
   CounterUpdated,
 };
 
+// function hydrate<G extends GameObjectName>(
+//   gameObject: Server.GameObject<G>
+// ): Client.GameObject<G> {
+//   switch (gameObject.gameObjectName) {
+//     case "Card": {
+//       break;
+//     }
+//     case "Deck": {
+//       break;
+//     }
+//     case "Counter": {
+//       break;
+//     }
+//   }
+// }
+
 function PlayerJoined(
   ctx: Events.Context<"Client">,
   data: Events.Data<"PlayerJoined">
@@ -37,7 +53,15 @@ function PlayerJoined(
     ctx.room.playerIDs.add(data.newPlayerID);
   } else if ("room" in data && ctx.room === null) {
     const { gameObjects, ...room } = data.room;
-    ctx.room = { ...room, gameObjects: new Map() };
+    ctx.room = {
+      ...room,
+      gameObjects: new Map(
+        [...gameObjects].map(([gameObjectID, gameObject]) => [
+          gameObjectID,
+          {} as Client.GameObject<"Card">,
+        ])
+      ),
+    };
     // TODO: hydrate gameObjects
   }
   return false;
