@@ -63,33 +63,42 @@ export function handleEvent<E extends EventName>(
     }
   }
 
-  for (const playerID of room.playerIDs) {
-    const { socket } = players.get(playerID)!;
-    switch (eventName) {
-      // for a PlayerJoined event, send the new player the Room state,
-      // and send other players the newPlayerID
-      case "PlayerJoined": {
-        type Data = Events.Data<"PlayerJoined">;
-        if (playerID === ctx.playerID) {
+  switch (eventName) {
+    case "PlayerJoined": {
+      type Data = Events.Data<"PlayerJoined">;
+      const newPlayerID = ctx.playerID;
+
+      for (const playerID of room.playerIDs) {
+        const { socket } = players.get(playerID)!;
+
+        if (playerID === newPlayerID) {
           socket.send({ ...data, room } as Data);
         } else {
-          socket.send({ ...data, newPlayerID: ctx.playerID } as Data);
+          socket.send({ ...data, newPlayerID } as Data);
         }
-        break;
       }
-      // for a PlayerLeft event, close the departing player's socket,
-      // and send other players the departedPlayerID
-      case "PlayerLeft": {
-        type Data = Events.Data<"PlayerLeft">;
-        if (playerID !== ctx.playerID) {
-          socket.send({ ...data, departedPlayerID: ctx.playerID } as Data);
+      break;
+    }
+    case "PlayerLeft": {
+      type Data = Events.Data<"PlayerLeft">;
+      const departedPlayerID = ctx.playerID;
+
+      for (const playerID of room.playerIDs) {
+        const { socket } = players.get(playerID)!;
+
+        if (playerID !== departedPlayerID) {
+          socket.send({ ...data, departedPlayerID } as Data);
         }
-        break;
       }
-      default: {
+      break;
+    }
+    default: {
+      for (const playerID of room.playerIDs) {
+        const { socket } = players.get(playerID)!;
+
         socket.send(data);
-        break;
       }
+      break;
     }
   }
 
