@@ -61,6 +61,12 @@ function PlayerLeft(
   ctx: Events.Context<"Client">,
   data: Events.Data<"PlayerLeft">
 ): boolean {
+  const { room } = ctx;
+  const { departedPlayerID } = data;
+
+  if (room && departedPlayerID) {
+    return room.playerIDs.delete(departedPlayerID);
+  }
   return false;
 }
 
