@@ -129,7 +129,15 @@ function PlayerJoined(
   // create new room or add to existing, as necessary
   const room = rooms.get(roomID);
   if (room) {
-    room.playerIDs.add(playerID);
+    if (
+      !room.isLocked &&
+      room.playerIDs.size < room.size &&
+      room.passwordHash === data.passwordHash
+    ) {
+      room.playerIDs.add(playerID);
+    } else {
+      return false;
+    }
   } else {
     rooms.set(roomID, <Room<"Server">>{
       playerIDs: new Set(playerID),
