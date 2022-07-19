@@ -34,7 +34,7 @@ export function broadcast<E extends EventName>(
 
   const [ctx, data] = args;
   const { socketServer, rooms, roomID, players } = ctx;
-  const {} = data;
+  const { eventName } = data;
 
   const room = rooms.get(roomID);
   if (!room) {
@@ -54,13 +54,10 @@ export function broadcast<E extends EventName>(
   }
 
   for (const playerID of room.playerIDs) {
-    // for a PlayerJoined event, send the new player the Room state,
-    // and send other players the newPlayerID
-    // for a PlayerLeft event, close the departing player's socket,
-    // and send other players the departedPlayerID
-    // for other events, broadcast as normal
     const { socket } = players.get(playerID)!;
-    switch (data.eventName) {
+    switch (eventName) {
+      // for a PlayerJoined event, send the new player the Room state,
+      // and send other players the newPlayerID
       case "PlayerJoined": {
         type Data = Events.Data<"PlayerJoined">;
         if (playerID === ctx.playerID) {
@@ -70,6 +67,8 @@ export function broadcast<E extends EventName>(
         }
         break;
       }
+      // for a PlayerLeft event, close the departing player's socket,
+      // and send other players the departedPlayerID
       case "PlayerLeft": {
         type Data = Events.Data<"PlayerLeft">;
         if (playerID === ctx.playerID) {
@@ -77,6 +76,9 @@ export function broadcast<E extends EventName>(
         } else {
           socket.send({ ...data, departedPlayerID: ctx.playerID } as Data);
         }
+        break;
+      }
+      case "GameObjectCreated": {
         break;
       }
       default: {
