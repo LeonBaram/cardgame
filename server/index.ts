@@ -21,7 +21,7 @@ const socketServer = new WebSocketServer({
 });
 
 const players = new Map<string, Player>();
-const rooms = new Map<string, Room>();
+const rooms = new Map<string, Room<"Server">>();
 
 socketServer.on("connection", (socket: WebSocket, req: IncomingMessage) => {
   const roomID = parseRoomID(req);
@@ -32,7 +32,7 @@ socketServer.on("connection", (socket: WebSocket, req: IncomingMessage) => {
   const playerID = randomUUID();
   players.set(playerID, <Player>{ roomID, socket });
 
-  const ctx: Events.Context = {
+  const ctx: Events.Context<"Server"> = {
     socketServer,
     players,
     rooms,
