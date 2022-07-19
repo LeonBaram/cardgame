@@ -60,15 +60,15 @@ export function newCard(args: ConstructArgs<"Card">): Client.Card {
     null;
   if (uri === null) {
     throw "TODO: load placeholder";
-  } else {
-    scene.load
-      .image(id, data.image_uris!.png!)
-      .once(Phaser.Loader.Events.COMPLETE, () => {
-        sprite.setTexture(id).setScale(0.3).setInteractive();
-        this.input.setDraggable(sprite);
-      })
-      .start();
   }
 
-  throw "TODO: implement";
+  scene.load
+    .image(id, data.image_uris!.png!)
+    .once(Phaser.Loader.Events.COMPLETE, () => {
+      sprite.setTexture(id).setScale(0.3).setInteractive();
+      this.input.setDraggable(sprite);
+    })
+    .start();
+
+  return <Client.Card>{ sprite, data, gameObjectName: "Card" };
 }
