@@ -29,12 +29,11 @@ export const handlers: {
   CounterUpdated,
 };
 
-function hydrate<G extends GameObjectName>([gameObjectID, gameObject]: [
-  string,
-  Server.GameObject<G>
-]): [string, Client.GameObject<G>] {
+function hydrate<G extends GameObjectName>(
+  gameObject: Server.GameObject<G>
+): Client.GameObject<G> {
   // TODO: implement hydration
-  return [gameObjectID, {} as Client.GameObject<G>];
+  return {} as Client.GameObject<G>;
 }
 
 function PlayerJoined(
@@ -49,7 +48,9 @@ function PlayerJoined(
 
     return true;
   } else if (room === null && data.room) {
-    const gameObjects = new Map([...data.room.gameObjects].map(hydrate));
+    const gameObjects = new Map(
+      [...data.room.gameObjects].map(([id, obj]) => [id, hydrate(obj)])
+    );
 
     ctx.room = { ...data.room, gameObjects };
     return true;
@@ -153,17 +154,13 @@ function GameObjectCreated(
   data: Events.Data<"GameObjectCreated">
 ): boolean {
   const { room } = ctx;
-  if (!room) {
-    return false;
+  const { gameObjectID, gameObject } = data;
+
+  if (room) {
+    room.gameObjects.set(gameObjectID, hydrate(gameObject));
+    return true;
   }
-
-  const [gameObjectID, gameObject] = hydrate([
-    data.gameObjectID,
-    data.gameObject,
-  ]);
-
-  room.gameObjects.set(gameObjectID, gameObject);
-  return true;
+  return false;
 }
 
 function GameObjectDeleted(
