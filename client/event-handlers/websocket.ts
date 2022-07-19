@@ -128,21 +128,24 @@ function RoomEnabledPassword(
   ctx: Events.Context<"Client">,
   data: Events.Data<"RoomEnabledPassword">
 ): boolean {
-  return false;
+  // do nothing
+  return true;
 }
 
 function RoomDisabledPassword(
   ctx: Events.Context<"Client">,
   data: Events.Data<"RoomDisabledPassword">
 ): boolean {
-  return false;
+  // do nothing
+  return true;
 }
 
 function RoomChangedPassword(
   ctx: Events.Context<"Client">,
   data: Events.Data<"RoomChangedPassword">
 ): boolean {
-  return false;
+  // do nothing
+  return true;
 }
 
 function GameObjectCreated(
