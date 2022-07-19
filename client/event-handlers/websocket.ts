@@ -152,7 +152,18 @@ function GameObjectCreated(
   ctx: Events.Context<"Client">,
   data: Events.Data<"GameObjectCreated">
 ): boolean {
-  return false;
+  const { room } = ctx;
+  if (!room) {
+    return false;
+  }
+
+  const [gameObjectID, gameObject] = hydrate([
+    data.gameObjectID,
+    data.gameObject,
+  ]);
+
+  room.gameObjects.set(gameObjectID, gameObject);
+  return true;
 }
 
 function GameObjectDeleted(
