@@ -48,6 +48,9 @@ export function handleEvent<E extends EventName>(
     return false;
   }
 
+  // before broadcasting to any client, check that all playerIDs are valid
+  // a valid playerID must point to a player whose websocket connection exists on the socketServer
+  // reason: to avoid desync between clients, a broadcast should reach all playerIDs, or none of them
   for (const playerID of room.playerIDs) {
     const player = players.get(playerID);
     if (!player) {
