@@ -110,14 +110,11 @@ function PlayerJoined(
 
   // leave old room if necessary
   const prevRoomID = player.roomID;
-  if (prevRoomID !== null && rooms.has(prevRoomID)) {
-    const playerLeft = handleEvent(
+  if (prevRoomID !== null) {
+    handleEvent<"PlayerLeft">(
       { ...ctx, roomID: prevRoomID },
       { ...data, eventName: "PlayerLeft" }
     );
-    if (!playerLeft) {
-      return false;
-    }
   }
 
   // create new room or add to existing, as necessary
