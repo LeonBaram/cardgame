@@ -2,7 +2,7 @@ import { randomUUID } from "crypto";
 import * as express from "express";
 import { createServer } from "http";
 import { Server as WebSocketServer } from "ws";
-import { handlers, broadcast } from "./event-handlers";
+import { handleEvent } from "./event-handlers";
 
 import type { IncomingMessage } from "http";
 import type { WebSocket } from "ws";
@@ -40,17 +40,17 @@ socketServer.on("connection", (socket: WebSocket, req: IncomingMessage) => {
     roomID,
   };
 
-  broadcast(handlers.PlayerJoined, ctx, { eventName: "PlayerJoined" });
+  handleEvent(ctx, { eventName: "PlayerJoined" });
 
   console.table(rooms);
   console.table(players);
 
   socket.on("message", <E extends EventName>(data: Events.Data<E>) =>
-    broadcast(handlers[data.eventName], ctx, data)
+    handleEvent(ctx, data)
   );
 
   socket.on("close", () => {
-    broadcast(handlers.PlayerLeft, ctx, { eventName: "PlayerLeft" });
+    handleEvent(ctx, { eventName: "PlayerLeft" });
     players.delete(playerID);
   });
 });

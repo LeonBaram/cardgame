@@ -24,17 +24,24 @@ export const handlers: {
   CounterUpdated,
 };
 
-export function broadcast<E extends EventName>(
-  handler: Events.Handler<"Server", E>,
-  ...args: Parameters<Events.Handler<"Server", E>>
+export function handleEvent<E extends EventName>(
+  ctx: Events.Context<"Server">,
+  data: Events.Data<E>
 ): boolean {
-  if (!handler(...args)) {
-    return false;
-  }
-
-  const [ctx, data] = args;
   const { socketServer, rooms, roomID, players } = ctx;
   const { eventName } = data;
+
+  switch (eventName) {
+    case "GameObjectCreated": {
+      data = { ...data, gameObjectID: randomUUID() };
+      break;
+    }
+  }
+
+  const ok = handlers[eventName](ctx, data);
+  if (!ok) {
+    return false;
+  }
 
   const room = rooms.get(roomID);
   if (!room) {
@@ -71,14 +78,9 @@ export function broadcast<E extends EventName>(
       // and send other players the departedPlayerID
       case "PlayerLeft": {
         type Data = Events.Data<"PlayerLeft">;
-        if (playerID === ctx.playerID) {
-          socket.close();
-        } else {
+        if (playerID !== ctx.playerID) {
           socket.send({ ...data, departedPlayerID: ctx.playerID } as Data);
         }
-        break;
-      }
-      case "GameObjectCreated": {
         break;
       }
       default: {
@@ -106,10 +108,9 @@ function PlayerJoined(
   // leave old room if necessary
   const prevRoomID = player.roomID;
   if (prevRoomID !== null && rooms.has(prevRoomID)) {
-    const playerLeft = broadcast(
-      PlayerLeft,
+    const playerLeft = handleEvent(
       { ...ctx, roomID: prevRoomID },
-      { ...data, eventName: "PlayerLeft", departedPlayerID: playerID }
+      { ...data, eventName: "PlayerLeft" }
     );
     if (!playerLeft) {
       return false;
@@ -158,7 +159,7 @@ function PlayerLeft(
   // choose new host if necessary
   else if (room.hostPlayerID === playerID) {
     const newHostID = [...room.playerIDs][0];
-    const newHost = broadcast(NewHost, ctx, {
+    const newHost = handleEvent(ctx, {
       ...data,
       eventName: "NewHost",
       newHostID,
@@ -289,14 +290,13 @@ function GameObjectCreated(
   data: Events.Data<"GameObjectCreated">
 ): boolean {
   const { rooms, roomID } = ctx;
-  const { gameObject } = data;
+  const { gameObjectID, gameObject } = data;
 
   const room = rooms.get(roomID);
   if (!room) {
     return false;
   }
 
-  const gameObjectID = randomUUID();
   room.gameObjects.set(gameObjectID, gameObject);
   return true;
 }

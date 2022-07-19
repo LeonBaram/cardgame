@@ -50,7 +50,7 @@ function PlayerJoined(
   data: Events.Data<"PlayerJoined">
 ): boolean {
   if ("newPlayerID" in data && ctx.room !== null) {
-    ctx.room.playerIDs.add(data.newPlayerID);
+    ctx.room.playerIDs.add(data.newPlayerID!);
   } else if ("room" in data && ctx.room === null) {
     const { gameObjects, ...room } = data.room;
     ctx.room = {
