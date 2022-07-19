@@ -92,6 +92,10 @@ export function handleEvent<E extends EventName>(
       }
       break;
     }
+    case "RoomChangedPassword":
+    case "RoomEnabledPassword":
+    case "RoomDisabledPassword":
+      break;
     default: {
       for (const playerID of room.playerIDs) {
         const { socket } = players.get(playerID)!;
