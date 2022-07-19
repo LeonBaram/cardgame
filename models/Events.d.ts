@@ -55,7 +55,7 @@ export namespace Events {
   };
 
   type GameObjectCreated<G extends GameObjectName> = GameObjectEvent<G> &
-    Server.GameObjectData<G>;
+    Server.GameObject<G>;
 
   type Data<E extends EventName = EventName> = {
     eventName: E;
