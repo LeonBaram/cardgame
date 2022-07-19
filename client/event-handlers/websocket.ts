@@ -167,7 +167,10 @@ function GameObjectDeleted(
   ctx: Events.Context<"Client">,
   data: Events.Data<"GameObjectDeleted">
 ): boolean {
-  return false;
+  const { room } = ctx;
+  const { gameObjectID } = data;
+
+  return !!room && room.gameObjects.delete(gameObjectID);
 }
 
 function GameObjectMoved(
