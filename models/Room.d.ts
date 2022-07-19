@@ -9,5 +9,5 @@ export type Room<T extends "Server" | "Client"> = {
   >;
   size: number;
   isLocked: boolean;
-  passwordHash: string | null;
+  passwordHash?: string;
 };

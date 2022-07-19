@@ -274,7 +274,7 @@ function RoomDisabledPassword(
     return false;
   }
 
-  room.passwordHash = null;
+  room.passwordHash = undefined;
   return true;
 }
 
