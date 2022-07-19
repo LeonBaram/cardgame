@@ -115,6 +115,12 @@ function RoomUnlocked(
   ctx: Events.Context<"Client">,
   data: Events.Data<"RoomUnlocked">
 ): boolean {
+  const { room } = ctx;
+
+  if (room) {
+    room.isLocked = false;
+    return true;
+  }
   return false;
 }
 
