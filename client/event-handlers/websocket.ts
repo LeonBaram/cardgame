@@ -177,14 +177,41 @@ function GameObjectMoved(
   ctx: Events.Context<"Client">,
   data: Events.Data<"GameObjectMoved">
 ): boolean {
-  return false;
+  const { room } = ctx;
+  const { gameObjectID, x, y } = data;
+
+  if (!room) {
+    return false;
+  }
+
+  const gameObject = room.gameObjects.get(gameObjectID);
+  if (!gameObject) {
+    return false;
+  }
+
+  gameObject.sprite.x = x;
+  gameObject.sprite.y = y;
+  return true;
 }
 
 function GameObjectRotated(
   ctx: Events.Context<"Client">,
   data: Events.Data<"GameObjectRotated">
 ): boolean {
-  return false;
+  const { room } = ctx;
+  const { gameObjectID, angle } = data;
+
+  if (!room) {
+    return false;
+  }
+
+  const gameObject = room.gameObjects.get(gameObjectID);
+  if (!gameObject) {
+    return false;
+  }
+
+  gameObject.sprite.angle = angle;
+  return true;
 }
 
 function GameObjectFlipped(
