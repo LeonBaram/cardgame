@@ -183,6 +183,10 @@ function NewHost(
     return false;
   }
 
+  if (!room.playerIDs.has(newHostID)) {
+    return false;
+  }
+
   room.hostPlayerID = newHostID;
   return true;
 }
