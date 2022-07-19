@@ -30,7 +30,7 @@ socketServer.on("connection", (socket: WebSocket, req: IncomingMessage) => {
   }
 
   const playerID = randomUUID();
-  players.set(playerID, <Player>{ roomID, socket });
+  players.set(playerID, <Player>{ roomID: null, socket });
 
   const ctx: Events.Context<"Server"> = {
     socketServer,
@@ -40,7 +40,10 @@ socketServer.on("connection", (socket: WebSocket, req: IncomingMessage) => {
     roomID,
   };
 
-  handleEvent(ctx, { eventName: "PlayerJoined" });
+  const ok = handleEvent(ctx, { eventName: "PlayerJoined" });
+  if (!ok) {
+    socket.close();
+  }
 
   console.table(rooms);
   console.table(players);
