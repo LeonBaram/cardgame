@@ -88,6 +88,13 @@ function RoomChangedSize(
   ctx: Events.Context<"Client">,
   data: Events.Data<"RoomChangedSize">
 ): boolean {
+  const { room } = ctx;
+  const { newRoomSize } = data;
+
+  if (room) {
+    room.size = newRoomSize;
+    return true;
+  }
   return false;
 }
 
