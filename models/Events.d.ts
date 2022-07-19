@@ -20,7 +20,8 @@ export type EventName =
   | "GameObjectDeleted"
   | "GameObjectMoved"
   | "GameObjectRotated"
-  | "GameObjectFlipped"
+  | "GameObjectFaceUp"
+  | "GameObjectFaceDown"
   // Deck Specific Events
   | "DeckInsertedCard"
   | "DeckRemovedCard"
@@ -84,9 +85,8 @@ export namespace Events {
     GameObjectRotated: GameObjectEvent & {
       angle: number;
     };
-    GameObjectFlipped: GameObjectEvent & {
-      isFaceUp: boolean;
-    };
+    GameObjectFaceUp: GameObjectEvent;
+    GameObjectFaceDown: GameObjectEvent;
 
     // Deck Specific Events
     DeckInsertedCard: GameObjectEvent<"Deck"> & {

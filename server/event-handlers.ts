@@ -17,7 +17,8 @@ export const handlers: {
   GameObjectDeleted,
   GameObjectMoved,
   GameObjectRotated,
-  GameObjectFlipped,
+  GameObjectFaceUp,
+  GameObjectFaceDown,
   DeckInsertedCard,
   DeckRemovedCard,
   DeckRearranged,
@@ -386,12 +387,12 @@ function GameObjectRotated(
   return true;
 }
 
-function GameObjectFlipped(
+function GameObjectFaceUp(
   ctx: Events.Context<"Server">,
-  data: Events.Data<"GameObjectFlipped">
+  data: Events.Data<"GameObjectFaceUp">
 ): boolean {
   const { rooms, roomID } = ctx;
-  const { gameObjectID, isFaceUp } = data;
+  const { gameObjectID } = data;
 
   const room = rooms.get(roomID);
   if (!room) {
@@ -403,7 +404,28 @@ function GameObjectFlipped(
     return false;
   }
 
-  gameObject.isFaceUp = isFaceUp;
+  gameObject.isFaceUp = true;
+  return true;
+}
+
+function GameObjectFaceDown(
+  ctx: Events.Context<"Server">,
+  data: Events.Data<"GameObjectFaceDown">
+): boolean {
+  const { rooms, roomID } = ctx;
+  const { gameObjectID } = data;
+
+  const room = rooms.get(roomID);
+  if (!room) {
+    return false;
+  }
+
+  const gameObject = room.gameObjects.get(gameObjectID);
+  if (!gameObject) {
+    return false;
+  }
+
+  gameObject.isFaceUp = false;
   return true;
 }
 

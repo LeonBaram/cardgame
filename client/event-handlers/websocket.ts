@@ -22,7 +22,8 @@ export const handlers: {
   GameObjectDeleted,
   GameObjectMoved,
   GameObjectRotated,
-  GameObjectFlipped,
+  GameObjectFaceUp,
+  GameObjectFaceDown,
   DeckInsertedCard,
   DeckRemovedCard,
   DeckRearranged,
@@ -214,9 +215,16 @@ function GameObjectRotated(
   return true;
 }
 
-function GameObjectFlipped(
+function GameObjectFaceUp(
   ctx: Events.Context<"Client">,
-  data: Events.Data<"GameObjectFlipped">
+  data: Events.Data<"GameObjectFaceUp">
+): boolean {
+  return false;
+}
+
+function GameObjectFaceDown(
+  ctx: Events.Context<"Client">,
+  data: Events.Data<"GameObjectFaceDown">
 ): boolean {
   return false;
 }
