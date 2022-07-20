@@ -73,7 +73,14 @@ export function handleEvent<E extends EventName>(
         const { socket } = players.get(playerID)!;
 
         if (playerID === newPlayerID) {
-          socket.send({ ...data, room } as Data);
+          socket.send({
+            ...data,
+            room: {
+              ...room,
+              playerIDs: [...room.playerIDs],
+              gameObjects: [...room.gameObjects],
+            },
+          } as Data);
         } else {
           socket.send({ ...data, newPlayerID } as Data);
         }

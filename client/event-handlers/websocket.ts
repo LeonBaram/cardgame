@@ -143,15 +143,16 @@ async function createGameObject(
 
 function createAllGameObjects(
   ctx: Events.Context<"Client">,
-  room: Room<"Server">
+  room: Room<"JSON">
 ): void {
   const { scene } = ctx;
-  const { gameObjects } = room;
+  const { playerIDs, gameObjects } = room;
   Promise.all(
-    [...gameObjects].map(([id, obj]) => createGameObject(scene, id, obj))
+    gameObjects.map(([id, obj]) => createGameObject(scene, id, obj))
   ).then((vals) => {
     ctx.room = {
       ...room,
+      playerIDs: new Set(playerIDs),
       gameObjects: new Map([...gameObjects].map(([id], i) => [id, vals[i]])),
     };
   });
