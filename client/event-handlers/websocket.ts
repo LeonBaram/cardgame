@@ -154,7 +154,7 @@ function GameObjectCreated(
   ctx: Events.Context<"Client">,
   data: Events.Data<"GameObjectCreated">
 ): boolean {
-  const { room } = ctx;
+  const { room, scene } = ctx;
   const { gameObjectID, gameObject } = data;
 
   if (room) {

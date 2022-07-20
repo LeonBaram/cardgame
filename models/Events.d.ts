@@ -40,6 +40,7 @@ export namespace Events {
     };
     Client: {
       room: Room<"Client"> | null;
+      scene: Phaser.Scene;
     };
   }[T];
 
