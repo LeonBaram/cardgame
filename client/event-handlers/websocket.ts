@@ -2,9 +2,12 @@ import type {
   Events,
   EventName,
   Server,
-  GameObjectName,
   Client,
+  ScryfallCardData,
+  Room,
 } from "../../models";
+
+import { scryfallFetch } from "../utils/card-importer";
 
 export const handlers: {
   [E in EventName]: Events.Handler<"Client", E>;
@@ -30,11 +33,128 @@ export const handlers: {
   CounterUpdated,
 };
 
-function hydrate<G extends GameObjectName>(
-  gameObject: Server.GameObject<G>
-): Client.GameObject<G> {
-  // TODO: implement hydration
-  return {} as Client.GameObject<G>;
+async function createCard(
+  scene: Phaser.Scene,
+  gameObjectID: string,
+  gameObject: Server.Card
+): Promise<Client.Card> {
+  const { scryfallID, x, y, gameObjectName } = gameObject as Server.Card;
+  const data = await scryfallFetch({ scryfallID });
+  const sprite = scene.add.image(x, y, gameObjectID);
+  const uri =
+    data.image_uris?.png ??
+    data.image_uris?.large ??
+    data.image_uris?.normal ??
+    data.image_uris?.small ??
+    null;
+
+  if (uri === null) {
+    throw "TODO: load placeholder";
+  }
+
+  scene.load
+    .image(gameObjectID, uri)
+    .once(Phaser.Loader.Events.COMPLETE, () => {
+      sprite.setTexture(gameObjectID).setScale(0.3).setInteractive();
+      this.input.setDraggable(sprite);
+    })
+    .start();
+
+  return <Client.Card>{ gameObjectName, sprite, data };
+}
+
+async function createDeck(
+  scene: Phaser.Scene,
+  gameObjectID: string,
+  gameObject: Server.Deck
+): Promise<Client.Deck> {
+  const { scryfallIDs, x, y, gameObjectName } = gameObject as Server.Deck;
+
+  type OkResult = PromiseFulfilledResult<ScryfallCardData>;
+  const data = (
+    await Promise.allSettled(
+      scryfallIDs.map((scryfallID) => scryfallFetch({ scryfallID }))
+    )
+  )
+    .filter(({ status }) => status === "fulfilled")
+    .map((res) => (res as OkResult).value);
+
+  const sprite = scene.add.image(x, y, gameObjectID);
+  const { image_uris } = data[0];
+  const uri =
+    image_uris?.png ??
+    image_uris?.large ??
+    image_uris?.normal ??
+    image_uris?.small ??
+    null;
+
+  if (uri === null) {
+    throw "TODO: load placeholder";
+  }
+
+  scene.load
+    .image(gameObjectID, uri)
+    .once(Phaser.Loader.Events.COMPLETE, () => {
+      sprite.setTexture(gameObjectID).setScale(0.3).setInteractive();
+      this.input.setDraggable(sprite);
+    })
+    .start();
+
+  return <Client.Deck>{ gameObjectName, sprite, data };
+}
+
+async function createCounter(
+  scene: Phaser.Scene,
+  gameObjectID: string,
+  gameObject: Server.Counter
+): Promise<Client.Counter> {
+  const { val, x, y, gameObjectName } = gameObject;
+  const sprite = scene.add.image(x, y, gameObjectID);
+  scene.load
+    .image(gameObjectID, "")
+    .once(Phaser.Loader.Events.COMPLETE, () => {
+      sprite.setTexture(gameObjectID).setScale(0.3).setInteractive();
+      this.input.setDraggable(sprite);
+    })
+    .start();
+
+  throw "TODO: counter assets";
+  return <Client.Counter>{ gameObjectName, sprite, val };
+}
+
+async function createGameObject(
+  scene: Phaser.Scene,
+  gameObjectID: string,
+  gameObject: Server.GameObject
+): Promise<Client.GameObject> {
+  const { gameObjectName } = gameObject;
+  switch (gameObjectName) {
+    case "Card": {
+      return createCard(scene, gameObjectID, gameObject as Server.Card);
+    }
+    case "Deck": {
+      return createDeck(scene, gameObjectID, gameObject as Server.Deck);
+    }
+    case "Counter": {
+      return createCounter(scene, gameObjectID, gameObject as Server.Counter);
+    }
+  }
+}
+
+function createAllGameObjects(
+  ctx: Events.Context<"Client">,
+  room: Room<"Server">
+): void {
+  const { scene } = ctx;
+  const { gameObjects } = room;
+  Promise.all(
+    [...gameObjects].map(([id, obj]) => createGameObject(scene, id, obj))
+  ).then((vals) => {
+    ctx.room = {
+      ...room,
+      gameObjects: new Map([...gameObjects].map(([id], i) => [id, vals[i]])),
+    };
+  });
 }
 
 function PlayerJoined(
@@ -49,11 +169,8 @@ function PlayerJoined(
 
     return true;
   } else if (room === null && data.room) {
-    const gameObjects = new Map(
-      [...data.room.gameObjects].map(([id, obj]) => [id, hydrate(obj)])
-    );
+    createAllGameObjects(ctx, data.room);
 
-    ctx.room = { ...data.room, gameObjects };
     return true;
   }
   return false;
@@ -158,7 +275,9 @@ function GameObjectCreated(
   const { gameObjectID, gameObject } = data;
 
   if (room) {
-    room.gameObjects.set(gameObjectID, hydrate(gameObject));
+    createGameObject(scene, gameObjectID, gameObject).then((clientObject) =>
+      room.gameObjects.set(gameObjectID, clientObject)
+    );
     return true;
   }
   return false;
