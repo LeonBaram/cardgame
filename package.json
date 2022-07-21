@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "web app for playing cards",
   "scripts": {
+    "build": "esbuild memes.ts --outfile=memes.js --bundle --minify --sourcemap",
     "dev": "concurrently \"parcel watch --dist-dir dist/client\" \"tsc -w\" \"nodemon dist/server\""
   },
   "repository": {
@@ -27,11 +28,11 @@
     "@types/express": "^4.17.13",
     "@types/ws": "^8.5.3",
     "concurrently": "^7.2.1",
+    "esbuild": "^0.14.49",
     "events": "^3.3.0",
     "hjson": "^3.2.2",
     "json-schema-to-typescript": "^10.1.5",
     "nodemon": "^2.0.19",
-    "parcel": "^2.6.0",
     "phaser": "^3.55.2",
     "typescript": "^4.7.4"
   },
