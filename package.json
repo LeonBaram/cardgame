@@ -16,10 +16,6 @@
     "url": "https://github.com/LeonBaram/cardgame/issues"
   },
   "homepage": "https://github.com/LeonBaram/cardgame#readme",
-  "workspaces": [
-    "client",
-    "server"
-  ],
   "targets": {
     "default": {
       "source": "client/welcome/index.html",
@@ -28,13 +24,23 @@
   },
   "devDependencies": {
     "@parcel/transformer-sass": "^2.6.0",
+    "@types/express": "^4.17.13",
+    "@types/ws": "^8.5.3",
     "concurrently": "^7.2.1",
     "events": "^3.3.0",
     "hjson": "^3.2.2",
-    "json-schema-to-typescript": "^10.1.5"
+    "json-schema-to-typescript": "^10.1.5",
+    "nodemon": "^2.0.19",
+    "parcel": "^2.6.0",
+    "phaser": "^3.55.2",
+    "typescript": "^4.7.4"
   },
   "optionalDependencies": {
     "bufferutil": "^4.0.6",
     "utf-8-validate": "^5.0.9"
+  },
+  "dependencies": {
+    "express": "^4.18.1",
+    "ws": "^8.8.1"
   }
 }
