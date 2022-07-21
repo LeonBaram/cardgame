@@ -1,8 +1,12 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "module": "commonjs",
+    "target": "ES2020",
+    "module": "ES2020",
     "outDir": "./dist/server",
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "preserveValueImports": true,
+    "importsNotUsedAsValues": "error",
     "strict": true,
     "sourceMap": true,
     "typeRoots": ["node_modules/@types"]
