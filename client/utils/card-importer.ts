@@ -1,9 +1,4 @@
-import type {
-  Client,
-  GameObjectName,
-  Room,
-  ScryfallCardData,
-} from "../../models";
+import type { ScryfallCardData } from "../../models";
 
 const scryfallAPI = "https://api.scryfall.com";
 
