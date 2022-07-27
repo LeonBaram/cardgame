@@ -48,8 +48,7 @@ const game = new Phaser.Game({
 
       const { keyboard } = this.input;
 
-      const { KeyCodes } = Phaser.Input.Keyboard;
-      const { W, A, S, D } = KeyCodes;
+      const { W, A, S, D } = Phaser.Input.Keyboard.KeyCodes;
 
       const addKey = (keyCode: number) => keyboard.addKey(keyCode);
 
