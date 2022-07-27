@@ -38,7 +38,10 @@ const game = new Phaser.Game({
         "cardback",
         "https://static.wikia.nocookie.net/mtgsalvation_gamepedia/images/f/f8/Magic_card_back.jpg"
       );
-      this.load.image("table", "assets/mtg-playmat.jpg");
+      this.load.image(
+        "table",
+        "https://external-preview.redd.it/Ru-kfHZ0G2rMjdO1XyXlMtygSrD_gQxszY3bF_9h2sY.jpg?auto=webp&s=1b892dce4331223544327bd067cefaeebb1cea3c"
+      );
     },
     async create() {
       const camera = this.cameras.main;
