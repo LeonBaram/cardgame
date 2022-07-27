@@ -3,7 +3,7 @@ import { scryfallFetch } from "./utils/card-importer";
 
 // expected args for phaser event handling callbacks
 // sources:
-//  - https://newdocs.phaser.io/docs/3.52.0/Phaser.GameObjects.Events
+//  - https://newdocs.phaser.io/docs/3.52.0/Phaser.Input.Events
 //  - https://newdocs.phaser.io/docs/3.52.0/Phaser.Loader.Events
 namespace PhaserHandlers {
   export interface MouseDrag {
