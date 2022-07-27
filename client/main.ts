@@ -1,47 +1,64 @@
 import type { Client } from "../models";
 import { scryfallFetch } from "./utils/card-importer";
 
-interface PhaserDragListener {
-  (
-    this: Phaser.Scene,
-    pointer: Phaser.Input.Pointer,
-    gameObject: Phaser.GameObjects.Image,
-    x: number,
-    y: number
-  ): void;
-}
+// expected args for phaser event handling callbacks
+// sources:
+//  - https://newdocs.phaser.io/docs/3.52.0/Phaser.GameObjects.Events
+//  - https://newdocs.phaser.io/docs/3.52.0/Phaser.Loader.Events
+namespace PhaserHandlers {
+  export interface MouseDrag {
+    (
+      this: Phaser.Scene,
+      pointer: Phaser.Input.Pointer,
+      gameObject: Phaser.GameObjects.Image,
+      x: number,
+      y: number
+    ): void;
+  }
 
-interface PhaserWheelListener {
-  (
-    this: Phaser.Scene,
-    pointer: Phaser.Input.Pointer,
-    currentlyOver: Phaser.GameObjects.GameObject[],
-    deltaX: number,
-    deltaY: number,
-    deltaZ: number
-  ): void;
+  export interface MouseWheel {
+    (
+      this: Phaser.Scene,
+      pointer: Phaser.Input.Pointer,
+      currentlyOver: Phaser.GameObjects.GameObject[],
+      deltaX: number,
+      deltaY: number,
+      deltaZ: number
+    ): void;
+  }
+
+  export interface LoaderComplete {
+    (
+      this: Phaser.Scene,
+      loader: Phaser.Loader.LoaderPlugin,
+      totalComplete: number,
+      totalFailed: number
+    ): void;
+  }
 }
 
 let cameraControls: Phaser.Cameras.Controls.SmoothedKeyControl;
+
+const assetURIs = {
+  cardback:
+    "https://static.wikia.nocookie.net/mtgsalvation_gamepedia/images/f/f8/Magic_card_back.jpg",
+  table:
+    "https://external-preview.redd.it/Ru-kfHZ0G2rMjdO1XyXlMtygSrD_gQxszY3bF_9h2sY.jpg?auto=webp&s=1b892dce4331223544327bd067cefaeebb1cea3c",
+};
 
 const game = new Phaser.Game({
   canvas: document.querySelector("#game-area") as HTMLCanvasElement,
   type: Phaser.WEBGL,
   scale: {
     mode: Phaser.Scale.FIT,
-    height: "80vh",
+    height: "100vh",
     width: "100vw",
   },
   scene: {
     preload() {
-      this.load.image(
-        "cardback",
-        "https://static.wikia.nocookie.net/mtgsalvation_gamepedia/images/f/f8/Magic_card_back.jpg"
-      );
-      this.load.image(
-        "table",
-        "https://external-preview.redd.it/Ru-kfHZ0G2rMjdO1XyXlMtygSrD_gQxszY3bF_9h2sY.jpg?auto=webp&s=1b892dce4331223544327bd067cefaeebb1cea3c"
-      );
+      for (const name in assetURIs) {
+        this.load.image(name, assetURIs[name]);
+      }
     },
     async create() {
       const camera = this.cameras.main;
@@ -60,14 +77,20 @@ const game = new Phaser.Game({
         maxSpeed: 1,
       });
 
-      const zoomCamera: PhaserWheelListener = (_ptr, _objs, _dx, dy, _dz) => {
+      type ScrollHandler = PhaserHandlers.MouseWheel;
+      const zoomCamera: ScrollHandler = (_ptr, _objs, _dx, dy, _dz) => {
         camera.zoom -= 0.1 * Math.sign(dy);
       };
       this.input.on("wheel", zoomCamera);
 
-      this.add.image(0, 0, "table").setOrigin(0, 0);
+      const { width, height } = this.scale;
+      const centerX = width / 2;
+      const centerY = height / 2;
 
-      const moveObject: PhaserDragListener = (_ptr, obj, x, y) => {
+      const table = this.add.image(centerX, centerY, "table");
+      table.setScale(Math.min(width / table.width, height / table.height));
+
+      const moveObject: PhaserHandlers.MouseDrag = (_ptr, obj, x, y) => {
         obj.x = x;
         obj.y = y;
       };
@@ -75,28 +98,21 @@ const game = new Phaser.Game({
 
       const cardName = "island";
       const id = "bepis";
-      const x = this.scale.width / 2;
-      const y = this.scale.height / 2;
       const data = await scryfallFetch({ cardName });
-      const sprite = this.add.image(x, y, id);
+      const sprite = this.add.image(centerX, centerY, id);
       const uri =
         data.image_uris?.png ??
         data.image_uris?.large ??
         data.image_uris?.normal ??
         data.image_uris?.small ??
-        null;
+        assetURIs.cardback;
 
-      if (uri === null) {
-        throw "TODO: load placeholder";
-      }
+      const spawnCard: PhaserHandlers.LoaderComplete = () => {
+        sprite.setTexture(id).setScale(0.3).setInteractive();
+        this.input.setDraggable(sprite);
+      };
 
-      this.load
-        .image(id, uri)
-        .once(Phaser.Loader.Events.COMPLETE, () => {
-          sprite.setTexture(id).setScale(0.3).setInteractive();
-          this.input.setDraggable(sprite);
-        })
-        .start();
+      this.load.image(id, uri).once("complete", spawnCard).start();
 
       const island = <Client.Card>{ sprite, data, gameObjectName: "Card" };
     },
