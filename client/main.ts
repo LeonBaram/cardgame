@@ -11,6 +11,8 @@ function handleDrag(
   gameObject.y = y;
 }
 
+let controls: Phaser.Cameras.Controls.SmoothedKeyControl;
+
 const game = new Phaser.Game({
   canvas: document.querySelector("#game-area") as HTMLCanvasElement,
   type: Phaser.WEBGL,
@@ -24,6 +26,20 @@ const game = new Phaser.Game({
       this.load.image("playmat", "assets/mtg-playmat.jpg");
     },
     async create() {
+      const { keyboard } = this.input;
+      const { W, A, S, D } = Phaser.Input.Keyboard.KeyCodes;
+
+      controls = new Phaser.Cameras.Controls.SmoothedKeyControl({
+        camera: this.cameras.main,
+        up: keyboard.addKey(W),
+        left: keyboard.addKey(A),
+        down: keyboard.addKey(S),
+        right: keyboard.addKey(D),
+        acceleration: 0.06,
+        drag: 0.0005,
+        maxSpeed: 1,
+      });
+
       this.add.image(0, 0, "playmat").setOrigin(0, 0);
       this.input.on("drag", handleDrag);
       const cardName = "island";
@@ -53,5 +69,8 @@ const game = new Phaser.Game({
 
       const island = <Client.Card>{ sprite, data, gameObjectName: "Card" };
     },
+    update(_time: number, delta: number) {
+      controls.update(delta);
+    },
   },
-});
+} as Phaser.Types.Core.GameConfig);
