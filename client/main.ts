@@ -106,6 +106,11 @@ const game = new Phaser.Game({
       };
       this.input.on("drag", moveObject);
 
+      const bringToFront: InputHandlers.PointerDown = (_ptr, objs) => {
+        this.children.bringToTop(objs[0]);
+      };
+      this.input.on("pointerdown", bringToFront);
+
       const cards = ["island", "forest"];
       await Promise.allSettled(cards.map((card) => loadCard(this, card)));
     },
