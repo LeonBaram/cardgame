@@ -1,17 +1,28 @@
 import type { Client } from "../models";
 import { scryfallFetch } from "./utils/card-importer";
 
-function handleDrag(
-  _pointer: Phaser.Input.Pointer,
-  gameObject: Phaser.GameObjects.Image,
-  x: number,
-  y: number
-): void {
-  gameObject.x = x;
-  gameObject.y = y;
+interface PhaserDragListener {
+  (
+    this: Phaser.Scene,
+    pointer: Phaser.Input.Pointer,
+    gameObject: Phaser.GameObjects.Image,
+    x: number,
+    y: number
+  ): void;
 }
 
-let controls: Phaser.Cameras.Controls.SmoothedKeyControl;
+interface PhaserWheelListener {
+  (
+    this: Phaser.Scene,
+    pointer: Phaser.Input.Pointer,
+    currentlyOver: Phaser.GameObjects.GameObject[],
+    deltaX: number,
+    deltaY: number,
+    deltaZ: number
+  ): void;
+}
+
+let cameraControls: Phaser.Cameras.Controls.SmoothedKeyControl;
 
 const game = new Phaser.Game({
   canvas: document.querySelector("#game-area") as HTMLCanvasElement,
@@ -23,14 +34,18 @@ const game = new Phaser.Game({
   },
   scene: {
     preload() {
-      this.load.image("playmat", "assets/mtg-playmat.jpg");
+      this.load.image("background", "assets/mtg-playmat.jpg");
     },
     async create() {
-      const { keyboard } = this.input;
-      const { W, A, S, D } = Phaser.Input.Keyboard.KeyCodes;
+      const camera = this.cameras.main;
 
-      controls = new Phaser.Cameras.Controls.SmoothedKeyControl({
-        camera: this.cameras.main,
+      const { keyboard } = this.input;
+
+      const { KeyCodes } = Phaser.Input.Keyboard;
+      const { W, A, S, D } = KeyCodes;
+
+      cameraControls = new Phaser.Cameras.Controls.SmoothedKeyControl({
+        camera,
         up: keyboard.addKey(W),
         left: keyboard.addKey(A),
         down: keyboard.addKey(S),
@@ -40,8 +55,19 @@ const game = new Phaser.Game({
         maxSpeed: 1,
       });
 
-      this.add.image(0, 0, "playmat").setOrigin(0, 0);
-      this.input.on("drag", handleDrag);
+      const zoomCamera: PhaserWheelListener = (_ptr, _objs, _dx, dy, _dz) => {
+        camera.zoom -= 0.1 * Math.sign(dy);
+      };
+      this.input.on("wheel", zoomCamera);
+
+      this.add.image(0, 0, "background").setOrigin(0, 0);
+
+      const moveObject: PhaserDragListener = (_ptr, obj, x, y) => {
+        obj.x = x;
+        obj.y = y;
+      };
+      this.input.on("drag", moveObject);
+
       const cardName = "island";
       const id = "bepis";
       const x = this.scale.width / 2;
@@ -70,7 +96,7 @@ const game = new Phaser.Game({
       const island = <Client.Card>{ sprite, data, gameObjectName: "Card" };
     },
     update(_time: number, delta: number) {
-      controls.update(delta);
+      cameraControls.update(delta);
     },
   },
 } as Phaser.Types.Core.GameConfig);
