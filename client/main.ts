@@ -5,8 +5,8 @@ import { scryfallFetch } from "./utils/card-importer";
 // sources:
 //  - https://newdocs.phaser.io/docs/3.52.0/Phaser.Input.Events
 //  - https://newdocs.phaser.io/docs/3.52.0/Phaser.Loader.Events
-namespace PhaserHandlers {
-  export interface MouseDrag {
+namespace InputHandlers {
+  export interface Drag {
     (
       this: Phaser.Scene,
       pointer: Phaser.Input.Pointer,
@@ -16,7 +16,7 @@ namespace PhaserHandlers {
     ): void;
   }
 
-  export interface MouseWheel {
+  export interface Wheel {
     (
       this: Phaser.Scene,
       pointer: Phaser.Input.Pointer,
@@ -27,7 +27,17 @@ namespace PhaserHandlers {
     ): void;
   }
 
-  export interface LoaderComplete {
+  export interface PointerDown {
+    (
+      this: Phaser.Scene,
+      pointer: Phaser.Input.Pointer,
+      currentlyOver: Phaser.GameObjects.GameObject[]
+    ): void;
+  }
+}
+
+namespace LoaderHandlers {
+  export interface Complete {
     (
       this: Phaser.Scene,
       loader: Phaser.Loader.LoaderPlugin,
@@ -77,7 +87,7 @@ const game = new Phaser.Game({
         maxSpeed: 1,
       });
 
-      type ScrollHandler = PhaserHandlers.MouseWheel;
+      type ScrollHandler = InputHandlers.Wheel;
       const zoomCamera: ScrollHandler = (_ptr, _objs, _dx, dy, _dz) => {
         camera.zoom -= 0.1 * Math.sign(dy);
       };
@@ -90,7 +100,7 @@ const game = new Phaser.Game({
       const table = this.add.image(centerX, centerY, "table");
       table.setScale(Math.min(width / table.width, height / table.height));
 
-      const moveObject: PhaserHandlers.MouseDrag = (_ptr, obj, x, y) => {
+      const moveObject: InputHandlers.Drag = (_ptr, obj, x, y) => {
         obj.x = x;
         obj.y = y;
       };
@@ -122,7 +132,7 @@ async function loadCard(
     data.image_uris?.small ??
     assetURIs.cardback;
 
-  const spawnCard: PhaserHandlers.LoaderComplete = () => {
+  const spawnCard: LoaderHandlers.Complete = () => {
     sprite.setTexture(id!).setRandomPosition().setScale(0.3).setInteractive();
     scene.input.setDraggable(sprite);
   };
