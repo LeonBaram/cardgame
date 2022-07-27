@@ -1,7 +1,7 @@
 import type { Client } from "../models";
 import { scryfallFetch } from "./utils/card-importer";
 
-function handleMouseDrag(
+function handleDrag(
   _pointer: Phaser.Input.Pointer,
   gameObject: Phaser.GameObjects.Image,
   x: number,
@@ -25,7 +25,7 @@ const game = new Phaser.Game({
     },
     async create() {
       this.add.image(0, 0, "playmat").setOrigin(0, 0);
-      this.input.on("drag", handleMouseDrag);
+      this.input.on("drag", handleDrag);
       const cardName = "island";
       const id = "bepis";
       const x = this.scale.width / 2;
