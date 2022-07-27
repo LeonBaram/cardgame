@@ -34,6 +34,10 @@ const game = new Phaser.Game({
   },
   scene: {
     preload() {
+      this.load.image(
+        "cardback",
+        "https://static.wikia.nocookie.net/mtgsalvation_gamepedia/images/f/f8/Magic_card_back.jpg"
+      );
       this.load.image("table", "assets/mtg-playmat.jpg");
     },
     async create() {
