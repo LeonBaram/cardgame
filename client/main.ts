@@ -20,8 +20,11 @@ const game = new Phaser.Game({
     width: "100vw",
   },
   scene: {
-    async preload() {},
+    preload() {
+      this.load.image("playmat", "assets/mtg-playmat.jpg");
+    },
     async create() {
+      this.add.image(0, 0, "playmat").setOrigin(0, 0);
       this.input.on("drag", handleMouseDrag);
       const cardName = "island";
       const id = "bepis";
