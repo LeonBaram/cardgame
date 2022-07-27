@@ -42,14 +42,13 @@ const game = new Phaser.Game({
       const { keyboard } = this.input;
 
       const { KeyCodes } = Phaser.Input.Keyboard;
-      const { W, A, S, D } = KeyCodes;
 
       cameraControls = new Phaser.Cameras.Controls.SmoothedKeyControl({
         camera,
-        up: keyboard.addKey(W),
-        left: keyboard.addKey(A),
-        down: keyboard.addKey(S),
-        right: keyboard.addKey(D),
+        up: keyboard.addKey(KeyCodes.W),
+        left: keyboard.addKey(KeyCodes.A),
+        down: keyboard.addKey(KeyCodes.S),
+        right: keyboard.addKey(KeyCodes.D),
         acceleration: 0.06,
         drag: 0.0005,
         maxSpeed: 1,
