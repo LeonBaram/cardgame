@@ -1,5 +1,5 @@
-import type { Client } from "../models";
-import { scryfallFetch } from "./utils/card-importer";
+import type { Client, ScryfallCardData } from "../models";
+import { scryfallFetchByID, scryfallFetchByName } from "./utils/card-importers";
 
 // expected args for phaser event handling callbacks
 // sources:
