@@ -96,28 +96,37 @@ const game = new Phaser.Game({
       };
       this.input.on("drag", moveObject);
 
-      const cardName = "island";
-      const id = "bepis";
-      const data = await scryfallFetch({ cardName });
-      const sprite = this.add.image(centerX, centerY, id);
-      const uri =
-        data.image_uris?.png ??
-        data.image_uris?.large ??
-        data.image_uris?.normal ??
-        data.image_uris?.small ??
-        assetURIs.cardback;
-
-      const spawnCard: PhaserHandlers.LoaderComplete = () => {
-        sprite.setTexture(id).setScale(0.3).setInteractive();
-        this.input.setDraggable(sprite);
-      };
-
-      this.load.image(id, uri).once("complete", spawnCard).start();
-
-      const island = <Client.Card>{ sprite, data, gameObjectName: "Card" };
+      const island = await loadCard(this, "island");
     },
     update(_time: number, delta: number) {
       cameraControls.update(delta);
     },
   },
 } as Phaser.Types.Core.GameConfig);
+
+async function loadCard(
+  scene: Phaser.Scene,
+  cardName: string,
+  id?: string
+): Promise<Client.Card> {
+  id ??= Math.random().toString();
+
+  const data = await scryfallFetch({ cardName });
+  const sprite = scene.add.image(0, 0, id);
+
+  const uri =
+    data.image_uris?.png ??
+    data.image_uris?.large ??
+    data.image_uris?.normal ??
+    data.image_uris?.small ??
+    assetURIs.cardback;
+
+  const spawnCard: PhaserHandlers.LoaderComplete = () => {
+    sprite.setTexture(id!).setRandomPosition().setScale(0.3).setInteractive();
+    scene.input.setDraggable(sprite);
+  };
+
+  scene.load.image(id, uri).once("complete", spawnCard).start();
+
+  return <Client.Card>{ data, sprite, gameObjectName: "Card" };
+}
