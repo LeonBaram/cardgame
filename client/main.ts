@@ -34,7 +34,7 @@ const game = new Phaser.Game({
   },
   scene: {
     preload() {
-      this.load.image("background", "assets/mtg-playmat.jpg");
+      this.load.image("table", "assets/mtg-playmat.jpg");
     },
     async create() {
       const camera = this.cameras.main;
@@ -60,7 +60,7 @@ const game = new Phaser.Game({
       };
       this.input.on("wheel", zoomCamera);
 
-      this.add.image(0, 0, "background").setOrigin(0, 0);
+      this.add.image(0, 0, "table").setOrigin(0, 0);
 
       const moveObject: PhaserDragListener = (_ptr, obj, x, y) => {
         obj.x = x;
