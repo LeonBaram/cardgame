@@ -96,7 +96,8 @@ const game = new Phaser.Game({
       };
       this.input.on("drag", moveObject);
 
-      const island = await loadCard(this, "island");
+      const cards = ["island", "forest"];
+      await Promise.allSettled(cards.map((card) => loadCard(this, card)));
     },
     update(_time: number, delta: number) {
       cameraControls.update(delta);
