@@ -20,6 +20,7 @@ const game = new Phaser.Game({
     width: "100vw",
   },
   scene: {
+    async preload() {},
     async create() {
       this.input.on("drag", handleMouseDrag);
       const cardName = "island";
