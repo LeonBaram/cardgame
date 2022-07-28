@@ -17,7 +17,7 @@ const defaultError: ApiError = {
   status: 404,
 };
 
-type ApiFetcher = (s: string) => Promise<ScryfallCardData | ApiError>;
+export type ApiFetcher = (s: string) => Promise<ScryfallCardData | ApiError>;
 
 type Name = string;
 type ID = string;
