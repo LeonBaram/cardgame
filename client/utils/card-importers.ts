@@ -28,13 +28,13 @@ export const scryfallFetchByName: ApiFetcher = async (name) => {
   const id = searches.get(name);
   switch (id) {
     case undefined:
-      // no cached search results
+      // no past search results
       break;
     case null:
-      // search 404'd
+      // past search 404'd
       return defaultError;
     default:
-      // search was success
+      // past search was success
       return scryfallFetchByID(id);
   }
 
