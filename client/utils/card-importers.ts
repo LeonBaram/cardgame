@@ -21,50 +21,42 @@ export type ApiFetcher = (s: string) => Promise<ScryfallCardData | ApiError>;
 
 type Name = string;
 type ID = string;
-const searches = new LRU<Name, ID | null>(600);
-const results = new LRU<ID, ScryfallCardData>(600);
+const fuzzyNameCache = new LRU<Name, ID | null>(600);
+const cardDataCache = new LRU<ID, ScryfallCardData>(600);
 
 export const scryfallFetchByName: ApiFetcher = async (name) => {
-  const id = searches.get(name);
-  switch (id) {
-    case undefined:
-      // no past search results
-      break;
-    case null:
-      // past search 404'd
-      return defaultError;
-    default:
-      // past search was success
-      return scryfallFetchByID(id);
+  if (!fuzzyNameCache.has(name)) {
+    const res = await fetch(`${scryfallAPI}/cards/named?fuzzy=${name}`);
+    const data: ScryfallCardData | ApiError = await res.json();
+
+    if (data.object === "error") {
+      fuzzyNameCache.set(name, null);
+    } else {
+      const { id } = data;
+      fuzzyNameCache.set(name, id);
+      cardDataCache.set(id, data);
+    }
   }
 
-  const res = await fetch(`${scryfallAPI}/cards/named?fuzzy=${name}`);
-  const data: ScryfallCardData | ApiError = await res.json();
+  const id = fuzzyNameCache.get(name);
 
-  if (data.object !== "error") {
-    const { id } = data;
-    searches.set(name, id);
-    results.set(id, data);
-  } else {
-    searches.set(name, null);
+  if (id === null) {
+    return defaultError;
   }
 
-  return data;
+  return scryfallFetchByID(id!);
 };
 
 export const scryfallFetchByID: ApiFetcher = async (id) => {
-  const data = results.get(id);
-  if (data) {
-    return data;
-  } else {
+  if (!cardDataCache.has(id)) {
     const res = await fetch(`${scryfallAPI}/cards/${id}`);
     const data: ScryfallCardData | ApiError = await res.json();
 
     if (data.object !== "error") {
       const { id } = data;
-      results.set(id, data);
+      cardDataCache.set(id, data);
     }
-
-    return data;
   }
+
+  return cardDataCache.get(id)!;
 };
