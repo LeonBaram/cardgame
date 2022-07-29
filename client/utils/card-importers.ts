@@ -1,4 +1,4 @@
-import { LRU } from "./LRU";
+import { LRU_Cache } from "./LRU";
 
 import type { ScryfallCardData } from "../../models";
 

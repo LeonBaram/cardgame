@@ -1,4 +1,4 @@
-export class LRU<K, V> extends Map<K, V> {
+export class LRU_Cache<K, V> extends Map<K, V> {
   readonly max: number;
 
   constructor(max: number, ...args: any[]) {
