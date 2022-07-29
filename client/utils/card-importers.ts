@@ -4,7 +4,7 @@ import type { ScryfallCardData } from "../../models";
 
 const scryfallAPI = "https://api.scryfall.com";
 
-type ApiError = {
+export type ApiError = {
   object: "error";
   code: "not_found";
   status: 404;
