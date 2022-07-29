@@ -11,23 +11,22 @@ export type ApiError = {
   details?: string;
 };
 
-const fetchCache = new LRU_Cache<string, Promise<Response>>(1000);
+export type ScryfallResponse = ScryfallCardData | ApiError;
+export type ApiFetcher = (s: string) => Promise<ScryfallResponse>;
 
-const memoizedFetch = (url: string): Promise<Response> => {
+const fetchCache = new LRU_Cache<string, Promise<ScryfallResponse>>(1000);
+
+const jsonFetch: ApiFetcher = async (url) => {
   if (!fetchCache.has(url)) {
-    fetchCache.set(url, fetch(url));
+    const res = await fetch(url);
+    const json: Promise<ScryfallResponse> = res.json();
+    fetchCache.set(url, json);
   }
   return fetchCache.get(url)!;
 };
 
-export type ApiFetcher = (s: string) => Promise<ScryfallCardData | ApiError>;
+export const scryfallFetchByName: ApiFetcher = (name) =>
+  jsonFetch(`${scryfallAPI}/cards/named?fuzzy=${name}`);
 
-export const scryfallFetchByName: ApiFetcher = async (name) => {
-  const res = await memoizedFetch(`${scryfallAPI}/cards/named?fuzzy=${name}`);
-  return await res.json();
-};
-
-export const scryfallFetchByID: ApiFetcher = async (id) => {
-  const res = await memoizedFetch(`${scryfallAPI}/cards/${id}`);
-  return await res.json();
-};
+export const scryfallFetchByID: ApiFetcher = (id) =>
+  jsonFetch(`${scryfallAPI}/cards/${id}`);
