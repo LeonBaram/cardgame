@@ -1,5 +1,9 @@
 import type { Client, ScryfallCardData } from "../models";
-import { scryfallFetchByID, scryfallFetchByName } from "./utils/card-importers";
+import {
+  ApiFetcher,
+  scryfallFetchByID,
+  scryfallFetchByName,
+} from "./utils/card-importers";
 
 // expected args for phaser event handling callbacks
 // sources:
@@ -49,13 +53,6 @@ namespace LoaderHandlers {
 
 let cameraControls: Phaser.Cameras.Controls.SmoothedKeyControl;
 
-const assetURIs = {
-  cardback:
-    "https://static.wikia.nocookie.net/mtgsalvation_gamepedia/images/f/f8/Magic_card_back.jpg",
-  table:
-    "https://external-preview.redd.it/Ru-kfHZ0G2rMjdO1XyXlMtygSrD_gQxszY3bF_9h2sY.jpg?auto=webp&s=1b892dce4331223544327bd067cefaeebb1cea3c",
-};
-
 const game = new Phaser.Game({
   canvas: document.querySelector("#game-area") as HTMLCanvasElement,
   type: Phaser.WEBGL,
@@ -66,9 +63,14 @@ const game = new Phaser.Game({
   },
   scene: {
     preload() {
-      for (const name in assetURIs) {
-        this.load.image(name, assetURIs[name]);
-      }
+      this.load.image(
+        "cardback",
+        "https://static.wikia.nocookie.net/mtgsalvation_gamepedia/images/f/f8/Magic_card_back.jpg"
+      );
+      this.load.image(
+        "table",
+        "https://external-preview.redd.it/Ru-kfHZ0G2rMjdO1XyXlMtygSrD_gQxszY3bF_9h2sY.jpg?auto=webp&s=1b892dce4331223544327bd067cefaeebb1cea3c"
+      );
     },
     async create() {
       const camera = this.cameras.main;
@@ -111,8 +113,7 @@ const game = new Phaser.Game({
       };
       this.input.on("pointerdown", bringToFront);
 
-      const cards = ["island", "forest"];
-      await Promise.allSettled(cards.map((card) => loadCard(this, card)));
+      importCardsByName(this, ...Array(100).fill("island"));
     },
     update(_time: number, delta: number) {
       cameraControls.update(delta);
@@ -120,29 +121,73 @@ const game = new Phaser.Game({
   },
 } as Phaser.Types.Core.GameConfig);
 
-async function loadCard(
+type CardImporter = (
+  fetchCardData: ApiFetcher,
   scene: Phaser.Scene,
-  cardName: string,
-  id?: string
-): Promise<Client.Card> {
-  id ??= Math.random().toString();
+  ...queries: string[]
+) => Promise<Client.Card[]>;
 
-  const data = await scryfallFetch({ cardName });
-  const sprite = scene.add.image(0, 0, id);
+const importCards: CardImporter = async (fetchCardData, scene, ...queries) => {
+  const results = await Promise.allSettled(queries.map(fetchCardData));
+  const cardData: ScryfallCardData[] = [];
+  for (const res of results) {
+    if (res.status === "fulfilled" && res.value.object !== "error") {
+      const data = res.value;
 
-  const uri =
-    data.image_uris?.png ??
-    data.image_uris?.large ??
-    data.image_uris?.normal ??
-    data.image_uris?.small ??
-    assetURIs.cardback;
+      const { id } = data;
 
-  const spawnCard: LoaderHandlers.Complete = () => {
-    sprite.setTexture(id!).setRandomPosition().setScale(0.3).setInteractive();
-    scene.input.setDraggable(sprite);
+      const uri =
+        data.image_uris?.png ??
+        data.image_uris?.large ??
+        data.image_uris?.normal ??
+        data.image_uris?.small ??
+        null;
+
+      if (!scene.textures.exists(id) && uri !== null) {
+        scene.load.image(id, uri);
+      }
+
+      cardData.push(data);
+    } else if (res.status === "rejected") {
+      console.log("rejected; reason:", res.reason);
+    } else if (res.value.object === "error") {
+      console.log(res.value.details ?? { error: res.value });
+    }
+  }
+
+  console.log({ results, cardData });
+
+  const cards: Client.Card[] = [];
+
+  const spawnCards: LoaderHandlers.Complete = () => {
+    for (const data of cardData) {
+      const { id } = data;
+
+      const uri =
+        data.image_uris?.png ??
+        data.image_uris?.large ??
+        data.image_uris?.normal ??
+        data.image_uris?.small ??
+        null;
+
+      const sprite = scene.add
+        .image(0, 0, uri ? id : "cardback")
+        .setTexture(id)
+        .setScale(0.3)
+        .setInteractive()
+        .setRandomPosition();
+      scene.input.setDraggable(sprite);
+
+      cards.push({ sprite, data, gameObjectName: "Card" });
+    }
   };
+  scene.load.once("complete", spawnCards).start();
 
-  scene.load.image(id, uri).once("complete", spawnCard).start();
+  return cards;
+};
 
-  return <Client.Card>{ data, sprite, gameObjectName: "Card" };
-}
+const importCardsByName = (scene: Phaser.Scene, ...queries: string[]) =>
+  importCards(scryfallFetchByName, scene, ...queries);
+
+const importCardsByID = (scene: Phaser.Scene, ...queries: string[]) =>
+  importCards(scryfallFetchByID, scene, ...queries);

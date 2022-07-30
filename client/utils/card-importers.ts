@@ -14,15 +14,25 @@ export type ApiError = {
 export type ScryfallResponse = ScryfallCardData | ApiError;
 export type ApiFetcher = (s: string) => Promise<ScryfallResponse>;
 
-const fetchCache = new LRU_Cache<string, Promise<ScryfallResponse>>(1000);
+const requestCache = new LRU_Cache<string, Promise<Response>>(1000);
+const dataCache = new LRU_Cache<string, ScryfallResponse>(1000);
+
+const memoFetch = (url: string): Promise<Response> => {
+  if (!requestCache.has(url)) {
+    requestCache.set(url, fetch(url));
+  }
+  return requestCache.get(url)!;
+};
 
 const jsonFetch: ApiFetcher = async (url) => {
-  if (!fetchCache.has(url)) {
-    const res = await fetch(url);
-    const json: Promise<ScryfallResponse> = res.json();
-    fetchCache.set(url, json);
+  if (!requestCache.has(url)) {
+    requestCache.set(url, fetch(url));
   }
-  return fetchCache.get(url)!;
+  if (!dataCache.has(url)) {
+    const res = await requestCache.get(url)!;
+    dataCache.set(url, await res.json());
+  }
+  return dataCache.get(url)!;
 };
 
 export const scryfallFetchByName: ApiFetcher = (name) =>
