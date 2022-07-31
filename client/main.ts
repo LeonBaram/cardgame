@@ -1,8 +1,8 @@
 import type { Client, ScryfallCardData } from "../models";
 import {
   ApiFetcher,
-  scryfallFetchByID,
-  scryfallFetchByName,
+  fetchByID,
+  fetchByName,
 } from "./utils/card-importers";
 
 // expected args for phaser event handling callbacks
@@ -53,7 +53,7 @@ namespace LoaderHandlers {
 
 let cameraControls: Phaser.Cameras.Controls.SmoothedKeyControl;
 
-const game = new Phaser.Game({
+export const game = new Phaser.Game({
   canvas: document.querySelector("#game-area") as HTMLCanvasElement,
   type: Phaser.WEBGL,
   scale: {
@@ -113,7 +113,7 @@ const game = new Phaser.Game({
       };
       this.input.on("pointerdown", bringToFront);
 
-      importCardsByName(this, ...Array(100).fill("island"));
+      importCardsByName(this, ...Array(1).fill("forest"));
     },
     update(_time: number, delta: number) {
       cameraControls.update(delta);
@@ -130,6 +130,7 @@ type CardImporter = (
 const importCards: CardImporter = async (fetchCardData, scene, ...queries) => {
   const results = await Promise.allSettled(queries.map(fetchCardData));
   const cardData: ScryfallCardData[] = [];
+
   for (const res of results) {
     if (res.status === "fulfilled" && res.value.object !== "error") {
       const data = res.value;
@@ -187,7 +188,7 @@ const importCards: CardImporter = async (fetchCardData, scene, ...queries) => {
 };
 
 const importCardsByName = (scene: Phaser.Scene, ...queries: string[]) =>
-  importCards(scryfallFetchByName, scene, ...queries);
+  importCards(fetchByName, scene, ...queries);
 
 const importCardsByID = (scene: Phaser.Scene, ...queries: string[]) =>
-  importCards(scryfallFetchByID, scene, ...queries);
+  importCards(fetchByID, scene, ...queries);

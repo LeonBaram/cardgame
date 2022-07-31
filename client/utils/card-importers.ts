@@ -14,29 +14,47 @@ export type ApiError = {
 export type ScryfallResponse = ScryfallCardData | ApiError;
 export type ApiFetcher = (s: string) => Promise<ScryfallResponse>;
 
-const requestCache = new LRU_Cache<string, Promise<Response>>(1000);
-const dataCache = new LRU_Cache<string, ScryfallResponse>(1000);
+const cachedData = {
+  // cache API requests - avoid sending identical repeats
+  requests: new LRU_Cache<string, Promise<Response>>(1000),
 
-const memoFetch = (url: string): Promise<Response> => {
-  if (!requestCache.has(url)) {
-    requestCache.set(url, fetch(url));
+  // cache card data by fuzzy card name
+  cardNames: new LRU_Cache<string, ScryfallResponse>(1000),
+
+  // cache card data by card ID
+  cardIDs: new LRU_Cache<string, ScryfallResponse>(1000),
+}
+
+const cachedFetch: ApiFetcher = async (url) => {
+  const { requests } = cachedData;
+
+  if (!requests.has(url)) {
+    requests.set(url, fetch(url, { cache: 'force-cache' }));
   }
-  return requestCache.get(url)!;
-};
 
-const jsonFetch: ApiFetcher = async (url) => {
-  if (!requestCache.has(url)) {
-    requestCache.set(url, fetch(url));
+  const res = await requests.get(url);
+  return await res.clone().json();
+}
+
+export const fetchByName: ApiFetcher = async (name) => {
+  const { cardNames, cardIDs } = cachedData;
+
+  if (!cardNames.has(name)) {
+    const data = await cachedFetch(`${scryfallAPI}/cards/named?fuzzy=${name}`);
+    cardNames.set(name, data);
+
+    if (data.object === 'card') {
+      const { id } = data;
+      cardIDs.set(id, data);
+    }
   }
-  if (!dataCache.has(url)) {
-    const res = await requestCache.get(url)!;
-    dataCache.set(url, await res.json());
+  return cardNames.get(name)!;
+}
+
+export const fetchByID: ApiFetcher = async (id) => {
+  const { cardIDs } = cachedData;
+  if (!cardIDs.has(id)) {
+    cardIDs.set(id, await cachedFetch(`${scryfallAPI}/cardIDs/${id}`));
   }
-  return dataCache.get(url)!;
-};
-
-export const scryfallFetchByName: ApiFetcher = (name) =>
-  jsonFetch(`${scryfallAPI}/cards/named?fuzzy=${name}`);
-
-export const scryfallFetchByID: ApiFetcher = (id) =>
-  jsonFetch(`${scryfallAPI}/cards/${id}`);
+  return cardIDs.get(id)!
+}
