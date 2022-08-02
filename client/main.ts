@@ -186,8 +186,8 @@ const importCards: CardImporter = async (fetchCardData, scene, ...queries) => {
   return cards;
 };
 
-const importCardsByName = (scene: Phaser.Scene, ...queries: string[]) =>
-  importCards(fetchByName, scene, ...queries);
+export const importCardsByName = (scene: Phaser.Scene, ...cardNames: string[]) =>
+  importCards(fetchByName, scene, ...cardNames);
 
-const importCardsByID = (scene: Phaser.Scene, ...queries: string[]) =>
-  importCards(fetchByID, scene, ...queries);
+export const importCardsByID = (scene: Phaser.Scene, ...ids: string[]) =>
+  importCards(fetchByID, scene, ...ids);
