@@ -150,13 +150,11 @@ const importCards: CardImporter = async (fetchCardData, scene, ...queries) => {
 
       cardData.push(data);
     } else if (res.status === "rejected") {
-      console.log("rejected; reason:", res.reason);
+      console.log(`rejected; ${res.reason}`);
     } else if (res.value.object === "error") {
-      console.log(res.value.details ?? { error: res.value });
+      console.log(`details: ${res.value.details ?? res.value}`);
     }
   }
-
-  console.log({ results, cardData });
 
   const cards: Client.Card[] = [];
 
