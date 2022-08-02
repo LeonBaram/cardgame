@@ -158,7 +158,8 @@ const importCards: CardImporter = async (fetchCardData, scene, ...queries) => {
 
   const cards: Client.Card[] = [];
 
-  const spawnCards: LoaderHandlers.Complete = () => {
+  scene.load
+  .once("complete", () => {
     for (const data of cardData) {
       const { id } = data;
 
@@ -179,8 +180,8 @@ const importCards: CardImporter = async (fetchCardData, scene, ...queries) => {
 
       cards.push({ sprite, data, gameObjectName: "Card" });
     }
-  };
-  scene.load.once("complete", spawnCards).start();
+  })
+  .start();
 
   return cards;
 };
