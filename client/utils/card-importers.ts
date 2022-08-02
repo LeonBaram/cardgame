@@ -15,7 +15,7 @@ export type ScryfallResponse = ScryfallCardData | ApiError;
 export type ApiFetcher = (s: string) => Promise<ScryfallResponse>;
 
 const cachedData = {
-  // cache API requests - avoid sending identical repeats
+  // cache API requests to avoid sending repeats
   requests: new LRU_Cache<string, Promise<Response>>(1000),
 
   // cache card data by fuzzy card name
