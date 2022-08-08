@@ -6,7 +6,7 @@ import { ApiFetcher, fetchByID, fetchByName } from "./utils/card-importers";
 //  - https://newdocs.phaser.io/docs/3.52.0/Phaser.Input.Events
 //  - https://newdocs.phaser.io/docs/3.52.0/Phaser.Loader.Events
 namespace InputHandlers {
-  export interface Drag {
+  export interface PointerDrag {
     (
       this: Phaser.Scene,
       pointer: Phaser.Input.Pointer,
@@ -91,7 +91,7 @@ export const game = new Phaser.Game({
       };
       this.input.on("wheel", zoomCamera);
 
-      const moveObject: InputHandlers.Drag = (_ptr, obj, x, y) => {
+      const moveObject: InputHandlers.PointerDrag = (_ptr, obj, x, y) => {
         obj.x = x;
         obj.y = y;
       };
