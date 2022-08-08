@@ -34,6 +34,30 @@ namespace InputHandlers {
       currentlyOver: Phaser.GameObjects.GameObject[]
     ): void;
   }
+
+  export interface PointerOver {
+    (
+      this: Phaser.Scene,
+      pointer: Phaser.Input.Pointer,
+      justOver: Phaser.GameObjects.GameObject[]
+    ): void;
+  }
+
+  export interface PointerOut {
+    (
+      this: Phaser.Scene,
+      pointer: Phaser.Input.Pointer,
+      justOut: Phaser.GameObjects.GameObject[]
+    ): void;
+  }
+
+  export interface KeyDown {
+    (
+      this: Phaser.Scene,
+      key: Phaser.Input.Keyboard.Key,
+      event: KeyboardEvent
+    ): void;
+  }
 }
 
 namespace LoaderHandlers {
