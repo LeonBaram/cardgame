@@ -16,7 +16,7 @@ namespace InputHandlers {
     ): void;
   }
 
-  export interface Wheel {
+  export interface MouseWheel {
     (
       this: Phaser.Scene,
       pointer: Phaser.Input.Pointer,
@@ -85,7 +85,7 @@ export const game = new Phaser.Game({
         maxSpeed: 1,
       });
 
-      type ScrollHandler = InputHandlers.Wheel;
+      type ScrollHandler = InputHandlers.MouseWheel;
       const zoomCamera: ScrollHandler = (_ptr, _objs, _dx, dy, _dz) => {
         camera.zoom -= 0.1 * Math.sign(dy);
       };
