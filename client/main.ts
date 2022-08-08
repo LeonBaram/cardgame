@@ -1,9 +1,5 @@
 import type { Client, ScryfallCardData } from "../models";
-import {
-  ApiFetcher,
-  fetchByID,
-  fetchByName,
-} from "./utils/card-importers";
+import { ApiFetcher, fetchByID, fetchByName } from "./utils/card-importers";
 
 // expected args for phaser event handling callbacks
 // sources:
@@ -95,13 +91,6 @@ export const game = new Phaser.Game({
       };
       this.input.on("wheel", zoomCamera);
 
-      const { width, height } = this.scale;
-      const centerX = width / 2;
-      const centerY = height / 2;
-
-      const table = this.add.image(centerX, centerY, "table");
-      table.setScale(Math.min(width / table.width, height / table.height));
-
       const moveObject: InputHandlers.Drag = (_ptr, obj, x, y) => {
         obj.x = x;
         obj.y = y;
@@ -112,6 +101,13 @@ export const game = new Phaser.Game({
         this.children.bringToTop(objs[0]);
       };
       this.input.on("pointerdown", bringToFront);
+
+      const { width, height } = this.scale;
+      const centerX = width / 2;
+      const centerY = height / 2;
+
+      const table = this.add.image(centerX, centerY, "table");
+      table.setScale(Math.min(width / table.width, height / table.height));
 
       importCardsByName(this, ...Array(1).fill("forest"));
     },
@@ -159,35 +155,37 @@ const importCards: CardImporter = async (fetchCardData, scene, ...queries) => {
   const cards: Client.Card[] = [];
 
   scene.load
-  .once("complete", () => {
-    for (const data of cardData) {
-      const { id } = data;
+    .once("complete", () => {
+      for (const data of cardData) {
+        const { id } = data;
 
-      const uri =
-        data.image_uris?.png ??
-        data.image_uris?.large ??
-        data.image_uris?.normal ??
-        data.image_uris?.small ??
-        null;
+        const uri =
+          data.image_uris?.png ??
+          data.image_uris?.large ??
+          data.image_uris?.normal ??
+          data.image_uris?.small ??
+          null;
 
-      const sprite = scene.add
-        .image(0, 0, uri ? id : "cardback")
-        .setTexture(id)
-        .setScale(0.3)
-        .setInteractive()
-        .setRandomPosition();
-      scene.input.setDraggable(sprite);
+        const sprite = scene.add
+          .image(0, 0, uri ? id : "cardback")
+          .setTexture(id)
+          .setScale(0.3)
+          .setInteractive()
+          .setRandomPosition();
+        scene.input.setDraggable(sprite);
 
-      cards.push({ sprite, data, gameObjectName: "Card" });
-    }
-  })
-  .start();
+        cards.push({ sprite, data, gameObjectName: "Card" });
+      }
+    })
+    .start();
 
   return cards;
 };
 
-export const importCardsByName = (scene: Phaser.Scene, ...cardNames: string[]) =>
-  importCards(fetchByName, scene, ...cardNames);
+export const importCardsByName = (
+  scene: Phaser.Scene,
+  ...cardNames: string[]
+) => importCards(fetchByName, scene, ...cardNames);
 
 export const importCardsByID = (scene: Phaser.Scene, ...ids: string[]) =>
   importCards(fetchByID, scene, ...ids);
